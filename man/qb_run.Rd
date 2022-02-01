@@ -5,49 +5,75 @@
 \title{Run a Quickbase report}
 \usage{
 qb_run(
+  subdomain,
+  user_token,
   table_id,
   report_id,
-  user_token,
-  subdomain,
+  agent = NULL,
   skip = NULL,
   top = NULL,
-  agent = NULL
+  json_out = FALSE,
+  flat = FALSE
 )
 }
 \arguments{
-\item{table_id}{A character vector with one element. Found in the URL of a Quickbase table between /db/ and ?}
+\item{subdomain}{Character vector with one element. Found at the beginning of
+the Quickbase URL. Realm specific.}
 
-\item{report_id}{A character vector with one element. Found in the 'Reports & Charts' page in Quickbase and in the report URL.}
+\item{user_token}{Character vector with one element. Created in 'My
+Preferences' under 'Manage user tokens' link.}
 
-\item{user_token}{A character vector with one element. Created in 'My Preferences' under 'Manage user tokens' link.}
+\item{table_id}{Character vector with one element. Found in the URL of a
+Quickbase table between /db/ and ?}
 
-\item{subdomain}{A character vector with one element. Found at the beginning of the Quickbase URL. Realm specific.}
+\item{report_id}{Character vector with one element. Found in the 'Reports &
+Charts' page in Quickbase and in the report URL.}
 
-\item{skip}{Optional. An integer. The number of rows to skip from the top of a record set.}
+\item{agent}{Optional. Character vector with one element. Describes
+user/agent making API call.}
 
-\item{top}{Optional. An integer. The limit on the number of records to pull starting top of a record set.}
+\item{skip}{Optional. Integer. The number of rows to skip from the top of a
+record set.}
 
-\item{agent}{Optional. A character vector with one element.}
+\item{top}{Optional. Integer. The limit on the number of records to pull
+starting at the top of a record set.}
+
+\item{json_out}{Optional. Logical. Set TRUE if you want JSON returned instead
+of a tibble}
+
+\item{flat}{Optional. Logical. Set TRUE to attempt to flatten the JSON before
+converting to tibble. Don't use this with reports containing user-list or
+file attachment fields.}
 }
 \value{
-A tibble with the report's data.
+A tibble or JSON object.
 }
 \description{
-Run a Quickbase report
+\code{qb_run} tells the Quickbase API to run a report and returns its data.
 }
+\section{Warning}{
+ Extracting nested fields (e.g., user-lists) will result a
+nested tibble.
+}
+
 \examples{
 # Minimum required info
-my_tibble <- qb_run(table_id = "bn9d8iesz",
-    report_id = "1",
-    user_token = "b25vav_itkb_wux8ipccd4345dsaq7dvczqvddz",
-    subdomain = "bhi.quickbase.com")
+my_tibble <- qb_run(subdomain = "bhi",
+    user_token = keyring::key_get("qb_example"),
+    table_id = "bn9d8iesz",
+    report_id = "1")
 
-# Full argument set
-my_tibble <- qb_run(table_id = "bn9d8iesz",
+# Long form call
+my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
+    user_token = paste0("QB-USER-TOKEN ", keyring::key_get("qb_example")),
+    table_id = "bn9d8iesz",
     report_id = "1",
-    user_token = "b25vav_itkb_wux8ipccd4345dsaq7dvczqvddz",
-    subdomain = "bhi",
+    agent = "FileService_Integration_V2.1",
     skip = 2,
     top = 10,
-    agent = "FileService_Integration_V2.1")
+    json_out = FALSE,
+    flat = TRUE)
+}
+\references{
+\href{https://developer.quickbase.com/}{Quickbase API documentation}
 }

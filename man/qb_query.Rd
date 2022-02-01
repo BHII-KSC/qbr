@@ -2,33 +2,75 @@
 % Please edit documentation in R/qb_query.R
 \name{qb_query}
 \alias{qb_query}
-\title{Query quickbase tables}
+\title{Query quickbase records}
 \usage{
 qb_query(
   subdomain,
   user_token,
   table_id,
+  agent = NULL,
   query = NULL,
   field_ids = NULL,
-  agent = NULL
+  json_out = FALSE,
+  flat = FALSE
 )
 }
 \arguments{
-\item{subdomain}{A character vector with one element. Found at the beginning of the Quickbase URL. Realm specific.}
+\item{subdomain}{Character vector with one element. Found at the beginning of
+the Quickbase URL. Realm specific.}
 
-\item{user_token}{A character vector with one element. Created in 'My Preferences' under 'Manage user tokens' link.}
+\item{user_token}{Character vector with one element. Created in 'My
+Preferences' under 'Manage user tokens' link.}
 
-\item{table_id}{A character vector of table ids. Found in the 'Reports & Charts' page in Quickbase and in the report URL.}
+\item{table_id}{Character vector with one element. Found in the URL of a
+Quickbase table between /db/ and ?}
 
-\item{query}{Optional. A character vector with one element. A query contructed using Quickbase's query language.}
+\item{agent}{Optional. Character vector with one element. Describes
+user/agent making API call.}
 
-\item{field_ids}{Optional. A vector of integers representing the field ids you want returned.}
+\item{query}{Optional. A character vector with one element. A query
+constructed using Quickbase's query language. Omitting this argument will
+return all records.}
 
-\item{agent}{Optional. A character vector with one element.}
+\item{field_ids}{Optional. Integer. Represents the field ids you want
+returned. Omitting this argument will return the \emph{default columns}.}
+
+\item{json_out}{Optional. Logical. Set TRUE if you want JSON returned instead
+of a tibble}
+
+\item{flat}{Optional. Logical. Set TRUE to attempt to flatten the JSON before
+converting to tibble. Don't use this with reports containing user-list or
+file attachments.}
 }
 \value{
-A list of tibbles with queried data
+A tibble or JSON object.
 }
 \description{
-Query quickbase tables
+\code{qb_query} submits a user-defined query to the Quickbase API and returns
+the result.
+}
+\section{Warning}{
+ Extracting nested fields (e.g., user-lists) will result a
+nested tibble.
+}
+
+\examples{
+# Get all records with \emph{default columns} for a table
+qb_query(subdomain = "bhi",
+    user_token = keyring::key_get("qb_example"),
+    table_id = "bn9d8iesz")
+
+# Get records where field_id 6 != 105 for specified columns.
+qb_query(subdomain = "bhi.quickbase.com",
+    user_token = keyring::key_get("qb_example"),
+    table_id = "bn9d8iesz",
+    agent = "je_testing",
+    query = "{6.XEX.105}",
+    field_ids = c(1, 2, 3, 6, 10, 11),
+    json_out = FALSE,
+    flat = TRUE)
+}
+\references{
+\href{https://developer.quickbase.com/}{Quickbase API
+documentation}
 }

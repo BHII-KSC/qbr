@@ -1,36 +1,58 @@
 #' Run a Quickbase report
 #'
+#' \code{qb_run} tells the Quickbase API to run a report and returns its data.
+#'
 #' @importFrom magrittr %>%
 #'
-#' @param table_id A character vector with one element. Found in the URL of a Quickbase table between /db/ and ?
-#' @param report_id A character vector with one element. Found in the 'Reports & Charts' page in Quickbase and in the report URL.
-#' @param user_token A character vector with one element. Created in 'My Preferences' under 'Manage user tokens' link.
-#' @param subdomain A character vector with one element. Found at the beginning of the Quickbase URL. Realm specific.
-#' @param skip Optional. An integer. The number of rows to skip from the top of a record set.
-#' @param top Optional. An integer. The limit on the number of records to pull starting top of a record set.
-#' @param agent Optional. A character vector with one element.
+#' @param subdomain Character vector with one element. Found at the beginning of
+#'   the Quickbase URL. Realm specific.
+#' @param user_token Character vector with one element. Created in 'My
+#'   Preferences' under 'Manage user tokens' link.
+#' @param table_id Character vector with one element. Found in the URL of a
+#'   Quickbase table between /db/ and ?
+#' @param report_id Character vector with one element. Found in the 'Reports &
+#'   Charts' page in Quickbase and in the report URL.
+#' @param agent Optional. Character vector with one element. Describes
+#'   user/agent making API call.
+#' @param skip Optional. Integer. The number of rows to skip from the top of a
+#'   record set.
+#' @param top Optional. Integer. The limit on the number of records to pull
+#'   starting at the top of a record set.
+#' @param json_out Optional. Logical. Set TRUE if you want JSON returned instead
+#'   of a tibble
+#' @param flat Optional. Logical. Set TRUE to attempt to flatten the JSON before
+#'   converting to tibble. Don't use this with reports containing user-list or
+#'   file attachment fields.
 #'
-#' @return A tibble with the report's data.
+#' @return A tibble or JSON object.
+#'
+#' @section Warning: Extracting nested fields (e.g., user-lists) will result a
+#'   nested tibble.
+#'
+#' @references \href{https://developer.quickbase.com/}{Quickbase API documentation}
+#'
 #' @export
 #'
 #' @examples
 #' # Minimum required info
-#' my_tibble <- qb_run(table_id = "bn9d8iesz",
-#'     report_id = "1",
-#'     user_token = "b25vav_itkb_wux8ipccd4345dsaq7dvczqvddz",
-#'     subdomain = "bhi.quickbase.com")
+#' my_tibble <- qb_run(subdomain = "bhi",
+#'     user_token = keyring::key_get("qb_example"),
+#'     table_id = "bn9d8iesz",
+#'     report_id = "1")
 #'
-#' # Full argument set
-#' my_tibble <- qb_run(table_id = "bn9d8iesz",
+#' # Long form call
+#' my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
+#'     user_token = paste0("QB-USER-TOKEN ", keyring::key_get("qb_example")),
+#'     table_id = "bn9d8iesz",
 #'     report_id = "1",
-#'     user_token = "b25vav_itkb_wux8ipccd4345dsaq7dvczqvddz",
-#'     subdomain = "bhi",
+#'     agent = "FileService_Integration_V2.1",
 #'     skip = 2,
 #'     top = 10,
-#'     agent = "FileService_Integration_V2.1")
-qb_run <- function(table_id, report_id, user_token, subdomain, skip = NULL, top = NULL, agent = NULL) {
+#'     json_out = FALSE,
+#'     flat = TRUE)
+qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL, skip = NULL, top = NULL, json_out = FALSE, flat = FALSE) {
 
-  # Check that user parameter input and fix where broken
+  # Validate arguments and fix where possible
   if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
     user_token <- stringr::str_c("QB-USER-TOKEN ", user_token)
   }
@@ -47,7 +69,7 @@ qb_run <- function(table_id, report_id, user_token, subdomain, skip = NULL, top 
     top = stringr::str_c("&top=", as.character(top))
   }
 
-  # Build the API call using the function parameters supplied by user
+  # Build the API call
   qb_url <- stringr::str_c("https://api.quickbase.com/v1/reports/",
                   report_id,
                   "/run?tableId=",
@@ -55,28 +77,35 @@ qb_run <- function(table_id, report_id, user_token, subdomain, skip = NULL, top 
                   skip,
                   top)
 
-  # Deliver API call to QB via an HTTP request and store QB's JSON payload
+  # Deliver API call to QB via an HTTP request, store response
   data_raw <- httr::POST(qb_url,
                          httr::accept_json(),
                          httr::add_headers("QB-Realm-Hostname" = subdomain,
-                               "User-Agent" = agent,
-                               "Authorization" = user_token))
+                                           "User-Agent" = agent,
+                                           "Authorization" = user_token))
 
-  # Stop the script if we receive an error code in response to our request
+  # Stop the script if HTTP request fails
   httr::stop_for_status(data_raw)
 
-  # Tidy JSON payload in a tibble
-  data_as_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = T)
-  data_fields <- tibble::as_tibble(data_as_text[[2]]) %>%
-    dplyr::mutate(id = as.character(id))
-  data_clean <- tibble::as_tibble(data_as_text[[1]]) %>%
-    dplyr::mutate(row_id = dplyr::row_number()) %>%
-    dplyr::rename_with(~ stringr::str_replace(., "\\.value", "")) %>%
-    tidyr::pivot_longer(-row_id, names_to = "id", values_to = "vals") %>%
-    dplyr::left_join(data_fields %>% dplyr::select(-type), by = "id") %>%
-    dplyr::select(-id) %>%
-    tidyr::pivot_wider(names_from = label, values_from = vals) %>%
-    dplyr::select(-row_id)
+  # Extract JSON payload from HTTP response and flatten
+  data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = flat)
+
+  if(json_out){
+    data_clean <- jsonlite::toJSON(data_text)
+  } else {
+    # Tidy JSON data into a tibble
+    data_fields <- tibble::as_tibble(data_text[[2]]) %>%
+      dplyr::mutate(id = as.character(id))
+
+    tryCatch(
+      data_clean <- tibble::as_tibble(data_text[[1]]) %>%
+        dplyr::rename_with(~ stringr::str_remove(., ".value")) %>%
+        dplyr::select(data_fields$id) %>%
+        dplyr::rename_with(~ data_fields$label),
+      error = function(e)
+        stop("The report contains nested fields and cannot be flattened.
+             Try again with 'flat' set to FALSE."))
+  }
 
   return(data_clean)
 }

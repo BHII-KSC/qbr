@@ -1,19 +1,57 @@
-#' Query quickbase tables
+#' Query quickbase records
+#'
+#' \code{qb_query} submits a user-defined query to the Quickbase API and returns
+#' the result.
 #'
 #' @importFrom magrittr %>%
 #'
-#' @param user_token A character vector with one element. Created in 'My Preferences' under 'Manage user tokens' link.
-#' @param subdomain A character vector with one element. Found at the beginning of the Quickbase URL. Realm specific.
-#' @param table_id A character vector of table ids. Found in the 'Reports & Charts' page in Quickbase and in the report URL.
-#' @param query Optional. A character vector with one element. A query contructed using Quickbase's query language.
-#' @param field_ids Optional. A vector of integers representing the field ids you want returned.
-#' @param agent Optional. A character vector with one element.
+#' @param subdomain Character vector with one element. Found at the beginning of
+#'   the Quickbase URL. Realm specific.
+#' @param user_token Character vector with one element. Created in 'My
+#'   Preferences' under 'Manage user tokens' link.
+#' @param table_id Character vector with one element. Found in the URL of a
+#'   Quickbase table between /db/ and ?
+#' @param agent Optional. Character vector with one element. Describes
+#'   user/agent making API call.
+#' @param query Optional. A character vector with one element. A query
+#'   constructed using Quickbase's query language. Omitting this argument will
+#'   return all records.
+#' @param field_ids Optional. Integer. Represents the field ids you want
+#'   returned. Omitting this argument will return the \emph{default columns}.
+#' @param json_out Optional. Logical. Set TRUE if you want JSON returned instead
+#'   of a tibble
+#' @param flat Optional. Logical. Set TRUE to attempt to flatten the JSON before
+#'   converting to tibble. Don't use this with reports containing user-list or
+#'   file attachments.
 #'
-#' @return A list of tibbles with queried data
+#' @return A tibble or JSON object.
+#'
+#' @section Warning: Extracting nested fields (e.g., user-lists) will result a
+#'   nested tibble.
+#'
+#' @references \href{https://developer.quickbase.com/}{Quickbase API
+#'   documentation}
+#'
 #' @export
 #'
 #' @examples
-qb_query <- function(subdomain, user_token, table_id, query = NULL, field_ids = NULL, agent = NULL) {
+#' # Get all records with \emph{default columns} for a table
+#' qb_query(subdomain = "bhi",
+#'     user_token = keyring::key_get("qb_example"),
+#'     table_id = "bn9d8iesz")
+#'
+#' # Get records where field_id 6 != 105 for specified columns.
+#' qb_query(subdomain = "bhi.quickbase.com",
+#'     user_token = keyring::key_get("qb_example"),
+#'     table_id = "bn9d8iesz",
+#'     agent = "je_testing",
+#'     query = "{6.XEX.105}",
+#'     field_ids = c(1, 2, 3, 6, 10, 11),
+#'     json_out = FALSE,
+#'     flat = TRUE)
+
+
+qb_query <- function(subdomain, user_token, table_id, agent = NULL, query = NULL, field_ids = NULL, json_out = FALSE, flat = FALSE) {
 
   # Check that user parameter input and fix where broken
   if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
@@ -25,8 +63,11 @@ qb_query <- function(subdomain, user_token, table_id, query = NULL, field_ids = 
   }
 
   # Build body of http request
+  body_list <- list(from = table_id, where = query, select = field_ids)
+  body_list <- body_list[!sapply(body_list, is.null)]
+
   json_body <- jsonlite::toJSON(
-    list(from = table_id, select = field_ids, where = query),
+    body_list,
     auto_unbox = TRUE)
 
   # Deliver API call to QB via an HTTP request and store QB's JSON payload
@@ -40,18 +81,26 @@ qb_query <- function(subdomain, user_token, table_id, query = NULL, field_ids = 
   # Stop the script if we receive an error code in response to our request
   httr::stop_for_status(data_raw)
 
-  # Tidy JSON payload in a tibble
-  data_as_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = T)
-  data_fields <- tibble::as_tibble(data_as_text[[2]]) %>%
-    dplyr::mutate(id = as.character(id))
-  data_clean <- tibble::as_tibble(data_as_text[[1]]) %>%
-    dplyr::mutate(row_id = dplyr::row_number()) %>%
-    dplyr::rename_with(~ stringr::str_replace(., "\\.value", "")) %>%
-    tidyr::pivot_longer(-row_id, names_to = "id", values_to = "vals") %>%
-    dplyr::left_join(data_fields %>% dplyr::select(-type), by = "id") %>%
-    dplyr::select(-id) %>%
-    tidyr::pivot_wider(names_from = label, values_from = vals) %>%
-    dplyr::select(-row_id)
+  # Extract JSON payload from HTTP response and flatten
+  data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = flat)
+
+
+  if(json_out){
+    data_clean <- jsonlite::toJSON(data_text)
+  } else {
+    # Tidy JSON data into a tibble
+    data_fields <- tibble::as_tibble(data_text[[2]]) %>%
+      dplyr::mutate(id = as.character(id))
+
+    tryCatch(
+      data_clean <- tibble::as_tibble(data_text[[1]]) %>%
+        dplyr::rename_with(~ stringr::str_replace(., "\\.value", "")) %>%
+        dplyr::select(data_fields$id) %>%
+        dplyr::rename_with(~ data_fields$label),
+      error = function(e)
+        stop("The report contains nested fields and cannot be flattened.
+        Try again with 'flat' set to FALSE."))
+  }
 
   return(data_clean)
 }
