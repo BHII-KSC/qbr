@@ -18,6 +18,7 @@ Imports:
     jsonlite,
     keyring,
     magrittr,
+    purrr,
     stringr,
     tibble,
     tidyr,

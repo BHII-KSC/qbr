@@ -20,9 +20,9 @@
 #'   returned. Omitting this argument will return the \emph{default columns}.
 #' @param json_out Optional. Logical. Set TRUE if you want JSON returned instead
 #'   of a tibble
-#' @param flat Optional. Logical. Set TRUE to attempt to flatten the JSON before
-#'   converting to tibble. Don't use this with reports containing user-list or
-#'   file attachments.
+#' @param flat Optional. Logical. Set TRUE to reduce nesting in the payload.
+#' @param type_suffix Optional. Logical. Set TRUE to append each field label
+#'   with its Quickbase data type.
 #'
 #' @return A tibble or JSON object.
 #'
@@ -51,7 +51,7 @@
 #'     flat = TRUE)
 
 
-qb_query <- function(subdomain, user_token, table_id, agent = NULL, query = NULL, field_ids = NULL, json_out = FALSE, flat = FALSE) {
+qb_query <- function(subdomain, user_token, table_id, agent = NULL, query = NULL, field_ids = NULL, json_out = FALSE, flat = TRUE, type_suffix = FALSE) {
 
   # Check that user parameter input and fix where broken
   if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
@@ -85,21 +85,38 @@ qb_query <- function(subdomain, user_token, table_id, agent = NULL, query = NULL
   data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = flat)
 
 
+  # Extract JSON payload from HTTP response and flatten
+  data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = flat)
+
   if(json_out){
     data_clean <- jsonlite::toJSON(data_text)
   } else {
-    # Tidy JSON data into a tibble
+
+    # Prepare field labels for renaming values object
     data_fields <- tibble::as_tibble(data_text[[2]]) %>%
-      dplyr::mutate(id = as.character(id))
+      dplyr::mutate(id = as.character(id),
+                    label_type = stringr::str_c(label, type, sep =".")) %>%
+      dplyr::arrange(id)
+
+    # Multi-dimensional fields to drop by suffix
+    drop_me <- c(".version", ".id", ".name", ".userName")
 
     tryCatch(
       data_clean <- tibble::as_tibble(data_text[[1]]) %>%
-        dplyr::rename_with(~ stringr::str_replace(., "\\.value", "")) %>%
-        dplyr::select(data_fields$id) %>%
-        dplyr::rename_with(~ data_fields$label),
+        dplyr::select(-dplyr::contains(drop_me)) %>%
+        dplyr::rename_with( ~ data_fields$label_type) %>%
+        dplyr::mutate(dplyr::across(dplyr::matches("[.]multitext"), ~ lapply(., paste, collapse = "; "))) %>%
+        dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ purrr::map(., "email"))) %>%
+        dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ lapply(., paste, collapse = "; "))) %>%
+        dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ unlist(.))),
       error = function(e)
-        stop("The report contains nested fields and cannot be flattened.
-        Try again with 'flat' set to FALSE."))
+        stop("The report data could not be parsed.
+             Consider trying again setting json_out = TRUE and flat = FALSE."))
+
+    if(type_suffix == FALSE){
+      data_clean <- data_clean %>%
+        dplyr::rename_with( ~ stringr::str_remove(., "[.].*"))
+    }
   }
 
   return(data_clean)

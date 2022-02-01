@@ -13,7 +13,8 @@ qb_run(
   skip = NULL,
   top = NULL,
   json_out = FALSE,
-  flat = FALSE
+  flat = TRUE,
+  type_suffix = FALSE
 )
 }
 \arguments{
@@ -41,9 +42,10 @@ starting at the top of a record set.}
 \item{json_out}{Optional. Logical. Set TRUE if you want JSON returned instead
 of a tibble}
 
-\item{flat}{Optional. Logical. Set TRUE to attempt to flatten the JSON before
-converting to tibble. Don't use this with reports containing user-list or
-file attachment fields.}
+\item{flat}{Optional. Logical. Set TRUE to reduce nesting in the payload.}
+
+\item{type_suffix}{Optional. Logical. Set TRUE to append each field label
+with its Quickbase data type.}
 }
 \value{
 A tibble or JSON object.
@@ -75,5 +77,6 @@ my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
     flat = TRUE)
 }
 \references{
-\href{https://developer.quickbase.com/}{Quickbase API documentation}
+\href{https://developer.quickbase.com/}{Quickbase API
+documentation}
 }

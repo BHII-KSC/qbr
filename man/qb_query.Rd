@@ -12,7 +12,8 @@ qb_query(
   query = NULL,
   field_ids = NULL,
   json_out = FALSE,
-  flat = FALSE
+  flat = TRUE,
+  type_suffix = FALSE
 )
 }
 \arguments{
@@ -38,9 +39,10 @@ returned. Omitting this argument will return the \emph{default columns}.}
 \item{json_out}{Optional. Logical. Set TRUE if you want JSON returned instead
 of a tibble}
 
-\item{flat}{Optional. Logical. Set TRUE to attempt to flatten the JSON before
-converting to tibble. Don't use this with reports containing user-list or
-file attachments.}
+\item{flat}{Optional. Logical. Set TRUE to reduce nesting in the payload.}
+
+\item{type_suffix}{Optional. Logical. Set TRUE to append each field label
+with its Quickbase data type.}
 }
 \value{
 A tibble or JSON object.
