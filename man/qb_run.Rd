@@ -12,9 +12,8 @@ qb_run(
   agent = NULL,
   skip = NULL,
   top = NULL,
-  json_out = FALSE,
-  flat = TRUE,
-  type_suffix = FALSE
+  type_suffix = FALSE,
+  paginate = TRUE
 )
 }
 \arguments{
@@ -39,16 +38,14 @@ record set.}
 \item{top}{Optional. Integer. The limit on the number of records to pull
 starting at the top of a record set.}
 
-\item{json_out}{Optional. Logical. Set TRUE if you want JSON returned instead
-of a tibble}
-
-\item{flat}{Optional. Logical. Set TRUE to reduce nesting in the payload.}
-
 \item{type_suffix}{Optional. Logical. Set TRUE to append each field label
 with its Quickbase data type.}
+
+\item{paginate}{Optional. Logical. Set TRUE to recursively call the API until
+all report pages are collected}
 }
 \value{
-A tibble or JSON object.
+A tibble.
 }
 \description{
 \code{qb_run} tells the Quickbase API to run a report and returns its data.
@@ -59,22 +56,19 @@ nested tibble.
 }
 
 \examples{
-# Minimum required info
+# Get all data in a report
 my_tibble <- qb_run(subdomain = "bhi",
     user_token = keyring::key_get("qb_example"),
     table_id = "bn9d8iesz",
     report_id = "1")
 
-# Long form call
+# Get rows 3 to 10 froma report
 my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
     user_token = paste0("QB-USER-TOKEN ", keyring::key_get("qb_example")),
     table_id = "bn9d8iesz",
     report_id = "1",
-    agent = "FileService_Integration_V2.1",
     skip = 2,
-    top = 10,
-    json_out = FALSE,
-    flat = TRUE)
+    top = 10)
 }
 \references{
 \href{https://developer.quickbase.com/}{Quickbase API

@@ -18,13 +18,12 @@
 #'   record set.
 #' @param top Optional. Integer. The limit on the number of records to pull
 #'   starting at the top of a record set.
-#' @param json_out Optional. Logical. Set TRUE if you want JSON returned instead
-#'   of a tibble
-#' @param flat Optional. Logical. Set TRUE to reduce nesting in the payload.
 #' @param type_suffix Optional. Logical. Set TRUE to append each field label
 #'   with its Quickbase data type.
+#' @param paginate Optional. Logical. Set TRUE to recursively call the API until
+#'   all report pages are collected
 #'
-#' @return A tibble or JSON object.
+#' @return A tibble.
 #'
 #' @section Warning: Extracting nested fields (e.g., user-lists) will result a
 #'   nested tibble.
@@ -35,23 +34,21 @@
 #' @export
 #'
 #' @examples
-#' # Minimum required info
+#' # Get all data in a report
 #' my_tibble <- qb_run(subdomain = "bhi",
 #'     user_token = keyring::key_get("qb_example"),
 #'     table_id = "bn9d8iesz",
 #'     report_id = "1")
 #'
-#' # Long form call
+#' # Get rows 3 to 10 froma report
 #' my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
 #'     user_token = paste0("QB-USER-TOKEN ", keyring::key_get("qb_example")),
 #'     table_id = "bn9d8iesz",
 #'     report_id = "1",
-#'     agent = "FileService_Integration_V2.1",
 #'     skip = 2,
-#'     top = 10,
-#'     json_out = FALSE,
-#'     flat = TRUE)
-qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL, skip = NULL, top = NULL, json_out = FALSE, flat = TRUE, type_suffix = FALSE) {
+#'     top = 10)
+qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
+                   skip = NULL, top = NULL, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
   if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
@@ -89,37 +86,40 @@ qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL, ski
   httr::stop_for_status(data_raw)
 
   # Extract JSON payload from HTTP response and flatten
-  data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = flat)
+  data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = TRUE)
 
-  if(json_out){
-    data_clean <- jsonlite::toJSON(data_text)
-  } else {
+  # Alert user to unhandled pagination
+  meta <- data_text[[3]]
+  if(meta[["totalRecords"]] - meta[["numRecords"]] > 0){
+    print(paste0("Table ", table_id, ", Report ", report_id,
+                 " had more records than can be processed in a single call. ",
+                 "Pulled ", meta[["numRecords"]], " of ", meta[["totalRecords"]]))
+  }
 
-    # Prepare field labels for renaming values object
-    data_fields <- tibble::as_tibble(data_text[[2]]) %>%
-      dplyr::mutate(id = as.character(id),
-                    label_type = stringr::str_c(label, type, sep =".")) %>%
-      dplyr::arrange(id)
+  # Prepare field labels for renaming values object
+  data_fields <- tibble::as_tibble(data_text[[2]]) %>%
+    dplyr::mutate(id = as.character(id),
+                  label_type = stringr::str_c(label, type, sep =".")) %>%
+    dplyr::arrange(id)
 
-    # Multi-dimensional fields to drop by suffix
-    drop_me <- c(".version", ".id", ".name", ".userName")
+  # Multi-dimensional fields to drop by suffix
+  drop_me <- c(".version", ".id", ".name", ".userName")
 
-    tryCatch(
-      data_clean <- tibble::as_tibble(data_text[[1]]) %>%
-        dplyr::select(-dplyr::contains(drop_me)) %>%
-        dplyr::rename_with( ~ data_fields$label_type) %>%
-        dplyr::mutate(dplyr::across(dplyr::matches("[.]multitext"), ~ lapply(., paste, collapse = "; "))) %>%
-        dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ purrr::map(., "email"))) %>%
-        dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ lapply(., paste, collapse = "; "))) %>%
-        dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ unlist(.))),
-      error = function(e)
-        stop("The report data could not be parsed.
-             Consider trying again setting json_out = TRUE and flat = FALSE."))
+  tryCatch(
+    data_clean <- tibble::as_tibble(data_text[[1]]) %>%
+      dplyr::select(-dplyr::contains(drop_me)) %>%
+      dplyr::rename_with( ~ data_fields$label_type) %>%
+      dplyr::mutate(dplyr::across(dplyr::matches("[.]multitext"), ~ lapply(., paste, collapse = "; "))) %>%
+      dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ purrr::map(., "email"))) %>%
+      dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ lapply(., paste, collapse = "; "))) %>%
+      dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ unlist(.))),
+    error = function(e)
+      stop("The report data could not be parsed.
+           Try removing fields with complex data types."))
 
-    if(type_suffix == FALSE){
-      data_clean <- data_clean %>%
-        dplyr::rename_with( ~ stringr::str_remove(., "[.].*"))
-    }
+  if(type_suffix == FALSE){
+    data_clean <- data_clean %>%
+      dplyr::rename_with( ~ stringr::str_remove(., "[.].*"))
   }
 
   return(data_clean)
