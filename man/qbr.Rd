@@ -3,15 +3,14 @@
 \docType{package}
 \name{qbr}
 \alias{qbr}
-\title{qbr: A package for interacting with the Quickbase API}
+\title{qbr: A package for interacting with the 'Quickbase' JSON API}
 \description{
-The qbr package is currently focused on extracting data from Quickbase via the API.
+The qbr package is currently focused on extracting data from 'Quickbase' via
+its JSON API.
 }
 \section{qbr functions}{
 
-* \code{qb_run} Runs a quickbase report and returns its data as a
-tibble or JSON.
-* \code{qb_query} Submits a user-defined query to the Quickbase API
-and returns the result.
+* \code{qb_run} Runs a 'Quickbase' report and returns its data as a
+tibble.
 }
 

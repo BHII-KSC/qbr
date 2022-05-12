@@ -1,6 +1,7 @@
 ## R CMD check results
 * There were no ERRORs, WARNINGs, or NOTEs on local Windows device:
-* Also ran devtools::check_mac_release without error, warning, or notes.
+* Also ran devtools::check_mac_release  and rhub::check without error, 
+  warning, or notes.
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package
