@@ -48,13 +48,8 @@ all report pages are collected}
 A tibble.
 }
 \description{
-\code{qb_run} tells the Quickbase API to run a report and returns its data.
+\code{qb_run} asks the Quickbase API to run a report and returns its data.
 }
-\section{Warning}{
- Extracting nested fields (e.g., user-lists) will result a
-nested tibble.
-}
-
 \examples{
 # Get all data in a report
 my_tibble <- qb_run(subdomain = "bhi",

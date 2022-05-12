@@ -15,7 +15,7 @@ You can install the development version of qbr like so:
 
 ``` r
  library(devtools)
- install_github("Author/qbr")
+ install_github("BHII-KSC/qbr")
 ```
 
 ## Usage
@@ -29,12 +29,12 @@ library(qbr)
 
 # Get data from a Quickbase report as a tibble
 qb_run(subdomain = "bhi",
-    user_token = keyring::key_get("qb_example"),
-    table_id = "bn9d8iesz",
-    report_id = "1")
+       user_token = keyring::key_get("qb_example"),
+       table_id = "bn9d8iesz",
+       report_id = "1")
 #> [1] "Calling Quickbase API"
 #> Response [https://api.quickbase.com/v1/reports/1/run?tableId=bn9d8iesz]
-#>   Date: 2022-05-12 14:54
+#>   Date: 2022-05-12 16:22
 #>   Status: 200
 #>   Content-Type: application/json; charset=UTF-8
 #>   Size: 3.69 kB
@@ -72,7 +72,7 @@ Quickbase report:
 
 ## Limitations
 
-Some non-standard characters cannot be properly parsed when converting
-from JSON, such as ’ (&rsquo). Reports containing text and rich-text
-fields are the most likely to suffer an error resulting from the use of
-non-standard characters.
+Some extended ASCII characters (codes 128-255) cannot be properly parsed
+when converting from JSON at present, such as ’ (&#146). Reports
+containing text and rich-text fields are the most likely to suffer an
+error resulting from the use of these extended characters.
