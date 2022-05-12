@@ -51,19 +51,22 @@ A tibble.
 \code{qb_run} asks the Quickbase API to run a report and returns its data.
 }
 \examples{
-# Get all data in a report
-my_tibble <- qb_run(subdomain = "bhi",
-    user_token = keyring::key_get("qb_example"),
-    table_id = "bn9d8iesz",
-    report_id = "1")
+\dontrun{
 
-# Get rows 3 to 6 from a report
-my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
-    user_token = keyring::key_get("qb_example"),
-    table_id = "bn9d8iesz",
-    report_id = "1",
-    skip = 2,
-    top = 3)
+   # Get all data in a report
+   my_tibble <- qb_run(subdomain = "abc",
+       user_token = keyring::key_get("qb_example"),
+       table_id = "bn9d8iesz",
+       report_id = "1")
+
+   # Get rows 3 to 6 from a report
+   my_tibble <- qb_run(subdomain = "abc.quickbase.com",
+       user_token = keyring::key_get("qb_example"),
+       table_id = "bn9d8iesz",
+       report_id = "1",
+       skip = 2,
+       top = 3)
+}
 }
 \references{
 \href{https://developer.quickbase.com/}{Quickbase API

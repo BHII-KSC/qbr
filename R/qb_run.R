@@ -32,24 +32,30 @@
 #' @export
 #'
 #' @examples
-#' # Get all data in a report
-#' my_tibble <- qb_run(subdomain = "bhi",
-#'     user_token = keyring::key_get("qb_example"),
-#'     table_id = "bn9d8iesz",
-#'     report_id = "1")
+#' \dontrun{
 #'
-#' # Get rows 3 to 6 from a report
-#' my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
-#'     user_token = keyring::key_get("qb_example"),
-#'     table_id = "bn9d8iesz",
-#'     report_id = "1",
-#'     skip = 2,
-#'     top = 3)
+#'    # Get all data in a report
+#'    my_tibble <- qb_run(subdomain = "abc",
+#'        user_token = keyring::key_get("qb_example"),
+#'        table_id = "bn9d8iesz",
+#'        report_id = "1")
+#'
+#'    # Get rows 3 to 6 from a report
+#'    my_tibble <- qb_run(subdomain = "abc.quickbase.com",
+#'        user_token = keyring::key_get("qb_example"),
+#'        table_id = "bn9d8iesz",
+#'        report_id = "1",
+#'        skip = 2,
+#'        top = 3)
+#' }
 qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
                    skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
-  # stopifnot()
+  stopifnot(is.character(subdomain), is.character(user_token), is.character(table_id),
+            is.character(report_id), is.numeric(skip), is.numeric(top),
+            is.logical(type_suffix), is.logical(paginate), length(subdomain) == 1,
+            length(user_token) == 1, length(table_id) == 1, length(report_id) == 1)
 
   if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
     user_token <- stringr::str_c("QB-USER-TOKEN ", user_token)
@@ -118,7 +124,7 @@ run_report <- function(subdomain, user_token, table_id, report_id, agent,
                                            "User-Agent" = agent,
                                            "Authorization" = user_token))
 
-  # Stop the script if HTTP request fails
+  # Stop if HTTP request fails
   httr::stop_for_status(data_raw)
 
   print(data_raw)

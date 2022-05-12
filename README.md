@@ -34,7 +34,7 @@ qb_run(subdomain = "bhi",
        report_id = "1")
 #> [1] "Calling Quickbase API"
 #> Response [https://api.quickbase.com/v1/reports/1/run?tableId=bn9d8iesz]
-#>   Date: 2022-05-12 16:22
+#>   Date: 2022-05-12 17:51
 #>   Status: 200
 #>   Content-Type: application/json; charset=UTF-8
 #>   Size: 3.69 kB
@@ -76,3 +76,8 @@ Some extended ASCII characters (codes 128-255) cannot be properly parsed
 when converting from JSON at present, such as ’ (&#146). Reports
 containing text and rich-text fields are the most likely to suffer an
 error resulting from the use of these extended characters.
+
+This package makes no attempt to convert datatypes. Number fields in
+Quickbase may well be interpreted in the resulting tibble as characters.
+The qb_run function does provide a type_suffix argument to allow you to
+discern the intended datatype more easily.

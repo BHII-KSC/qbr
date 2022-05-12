@@ -71,4 +71,9 @@ Some extended ASCII characters (codes 128-255) cannot be properly parsed when
 converting from JSON at present, such as ’ (&#146). Reports containing text and 
 rich-text fields are the most likely to suffer an error resulting from the use of 
 these extended characters. 
+
+This package makes no attempt to convert datatypes. Number fields in Quickbase
+may well be interpreted in the resulting tibble as characters. The qb_run function
+does provide a type_suffix argument to allow you to discern the intended datatype
+more easily.
  
