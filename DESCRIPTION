@@ -3,11 +3,10 @@ Title: Access the 'Quickbase API'
 Version: 0.0.0.9000
 Authors@R: c(
     person("John", "Erdmann", , "john.erdmann@keene.edu", role = c("aut", "cre")),
-    person("Behavioral Health Improvement Institute", role = c("cph", "fnd")))
+    person("Keene State College", role = c("cph", "fnd")))
 Description: Functions to interact with the 'Quickbase API'. You supply parameters 
-    for an API call and 'qbr' configures and delivers an http request to the 
-    'Quickbase API' endpoint. Internal code and outputs follow the 'tidyverse'
-    philosophy. 
+    for an API call, 'qbr' delivers an http request to the 'Quickbase API' endpoint 
+    and returns its response. Outputs follow 'tidyverse' philosophy.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -16,13 +15,11 @@ Imports:
     dplyr,
     httr,
     jsonlite,
-    keyring,
     magrittr,
     purrr,
     stringr,
-    tibble,
-    tidyr,
-    utils
+    tibble
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    keyring
 Config/testthat/edition: 3

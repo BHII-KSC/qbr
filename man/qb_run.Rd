@@ -10,8 +10,8 @@ qb_run(
   table_id,
   report_id,
   agent = NULL,
-  skip = NULL,
-  top = NULL,
+  skip = 0,
+  top = 0,
   type_suffix = FALSE,
   paginate = TRUE
 )
@@ -62,13 +62,13 @@ my_tibble <- qb_run(subdomain = "bhi",
     table_id = "bn9d8iesz",
     report_id = "1")
 
-# Get rows 3 to 10 froma report
+# Get rows 3 to 6 from a report
 my_tibble <- qb_run(subdomain = "bhi.quickbase.com",
-    user_token = paste0("QB-USER-TOKEN ", keyring::key_get("qb_example")),
+    user_token = keyring::key_get("qb_example"),
     table_id = "bn9d8iesz",
     report_id = "1",
     skip = 2,
-    top = 10)
+    top = 3)
 }
 \references{
 \href{https://developer.quickbase.com/}{Quickbase API

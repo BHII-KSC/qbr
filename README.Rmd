@@ -40,8 +40,7 @@ library(qbr)
 my_tibble <- qb_run(subdomain = "bhi",
     user_token = keyring::key_get("qb_example"),
     table_id = "bn9d8iesz",
-    report_id = "1",
-    flat = T)
+    report_id = "1")
 ```
 
 You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. 
