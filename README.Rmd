@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of qbr is to make it easier to interact with Quickbase's API.
+The goal of qbr is to make it easy to interact with Quickbase's JSON API.
 
 ## Installation
 
@@ -29,18 +29,46 @@ You can install the development version of qbr like so:
  install_github("Author/qbr")
 ```
 
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+It is often cumbersome to manually download data from Quickbase to work on it in R.
+The qb_run function makes it easy to extract report data via the Quickbase JSON API:
 
-```{r example}
+```{r}
 library(qbr)
 
 # Get data from a Quickbase report as a tibble
-my_tibble <- qb_run(subdomain = "bhi",
-    user_token = keyring::key_get("qb_example"),
-    table_id = "bn9d8iesz",
-    report_id = "1")
+qb_run(subdomain = "bhi",
+       user_token = keyring::key_get("qb_example"),
+       table_id = "bn9d8iesz",
+       report_id = "1")
+
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. 
+Notice that this function returns a tibble even though the payload from Quickbase
+is non-tabular JSON. This function extracts data from the Quickbase report 
+(recursively if needed to handle the API's auto-pagination) and then makes the
+data tidy using 'tidyverse' principles. 
+
+
+## Complex data types
+
+This packages returns some field types slightly differently to a Quickbase report:
+```{r echo = FALSE, results ='asis'}
+library(tibble)
+library(knitr)
+
+kable(tribble(~`Field type`, ~`Returned data type`,
+        "Multi-select text", "Semicolon-separated text",
+        "User", "User's email address",
+        "List-user", "Semicolon-separated email addresses"))
+```
+
+
+## Limitations
+
+Some extended ASCII characters (codes 128-255) cannot be properly parsed when 
+converting from JSON at present, such as ’ (&#146). Reports containing text and 
+rich-text fields are the most likely to suffer an error resulting from the use of 
+these extended characters. 
+ 

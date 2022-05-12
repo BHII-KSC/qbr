@@ -1,6 +1,6 @@
 #' Run a Quickbase report
 #'
-#' \code{qb_run} tells the Quickbase API to run a report and returns its data.
+#' \code{qb_run} asks the Quickbase API to run a report and returns its data.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -25,8 +25,6 @@
 #'
 #' @return A tibble.
 #'
-#' @section Warning: Extracting nested fields (e.g., user-lists) will result a
-#'   nested tibble.
 #'
 #' @references \href{https://developer.quickbase.com/}{Quickbase API
 #'   documentation}
@@ -51,6 +49,8 @@ qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
                    skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
+  # stopifnot()
+
   if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
     user_token <- stringr::str_c("QB-USER-TOKEN ", user_token)
   }
@@ -62,8 +62,6 @@ qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
   # Call API
   print("Calling Quickbase API")
   data_text <- run_report(subdomain, user_token, table_id, report_id, agent, skip, top, paginate)
-
-  print("Cleaning extracted data")
 
   # Prepare field labels for renaming values object
   data_fields <- data_text[[2]] %>%
@@ -95,8 +93,6 @@ qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
     data_clean <- data_clean %>%
       dplyr::rename_with( ~ stringr::str_remove(., "[.].*"))
   }
-
-  print("Process complete")
 
   return(data_clean)
 }
@@ -133,8 +129,8 @@ run_report <- function(subdomain, user_token, table_id, report_id, agent,
     error = function(e)
       stop("The report data could not be parsed.
            This is likely due to special characters in text or rich-text fields.
-           Try removing fields containing non-standard characters from your
-           Quickbase report, such as &rsquo;"))
+           Try removing fields containing extended ASCII characters from your
+           Quickbase report, such as &#146;"))
 
   new_page <- tibble::as_tibble(data_text[[1]])
   meta <- data_text[[3]]
