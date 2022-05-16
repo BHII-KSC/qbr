@@ -29,28 +29,19 @@ library(qbr)
 
 # Get data from a Quickbase report as a tibble
 qb_run(subdomain = "bhi",
-       user_token = keyring::key_get("qb_example"),
+       token = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
-       report_id = "1")
-#> [1] "Calling Quickbase API"
-#> Response [https://api.quickbase.com/v1/reports/1/run?tableId=bn9d8iesz]
-#>   Date: 2022-05-12 18:12
-#>   Status: 200
-#>   Content-Type: application/json; charset=UTF-8
-#>   Size: 3.69 kB
-#> # A tibble: 7 × 13
-#>   `User-friendly`    Accessible Intuitive `Easy to start` Powerful `Good syntax`
-#>   <chr>              <chr>      <chr>     <chr>           <chr>    <chr>        
-#> 1 3 - Neutral        4 - Somew… 5 - Stro… 3 - Neutral     5 - Str… 2 - Somewhat…
-#> 2 5 - Strongly agree 4 - Somew… 4 - Some… 4 - Somewhat a… 5 - Str… 3 - Neutral  
-#> 3 1 - Strongly disa… 2 - Somew… 1 - Stro… 1 - Strongly d… 5 - Str… 4 - Somewhat…
-#> 4 3 - Neutral        4 - Somew… 3 - Neut… 4 - Somewhat a… 4 - Som… 4 - Somewhat…
-#> 5 3 - Neutral        3 - Neutr… 2 - Some… 4 - Somewhat a… 5 - Str… 2 - Somewhat…
-#> 6 2 - Somewhat disa… 4 - Somew… 2 - Some… 5 - Strongly a… 1 - Str… 3 - Neutral  
-#> 7 2 - Somewhat disa… 4 - Somew… 2 - Some… 2 - Somewhat d… 3 - Neu… 2 - Somewhat…
-#> # … with 7 more variables: Efficient <chr>, Flexible <chr>, `Record ID#` <int>,
-#> #   `Respondent ID` <chr>, `Date of assessment` <chr>,
-#> #   `Assessment period` <chr>, `Respondent type` <chr>
+       report_id = "7")
+#> # A tibble: 7 × 5
+#>   `Date assessed` Accessible            Intuitive  `Record ID#` `Respondent ty…`
+#>   <chr>           <chr>                 <chr>             <int> <chr>           
+#> 1 2018-12-19      4 - Somewhat agree    5 - Stron…            1 Data analyst    
+#> 2 2018-12-19      4 - Somewhat agree    4 - Somew…            2 Data analyst    
+#> 3 2018-12-19      2 - Somewhat disagree 1 - Stron…            3 Evaluator       
+#> 4 2018-12-19      4 - Somewhat agree    3 - Neutr…            4 Evaluator       
+#> 5 2019-12-04      3 - Neutral           2 - Somew…           20 Data analyst    
+#> 6 2021-03-30      4 - Somewhat agree    2 - Somew…           22 Data analyst    
+#> 7 2019-11-27      4 - Somewhat agree    2 - Somew…            5 Data analyst
 ```
 
 Notice that this function returns a tibble even though the payload from

@@ -6,7 +6,7 @@
 #'
 #' @param subdomain Character vector with one element. Found at the beginning of
 #'   the Quickbase URL. Realm specific.
-#' @param user_token Character vector with one element. Created in 'My
+#' @param token Character vector with one element. Created in 'My
 #'   Preferences' under 'Manage user tokens' link.
 #' @param table_id Character vector with one element. Found in the URL of a
 #'   Quickbase table between /db/ and ?
@@ -26,7 +26,7 @@
 #' @return A tibble.
 #'
 #'
-#' @references \href{https://developer.quickbase.com/}{Quickbase API
+#' @references \href{https://developer.quickbase.com}{Quickbase API
 #'   documentation}
 #'
 #' @export
@@ -36,29 +36,30 @@
 #'
 #'    # Get all data in a report
 #'    my_tibble <- qb_run(subdomain = "abc",
-#'        user_token = keyring::key_get("qb_example"),
+#'        token = keyring::key_get("qb_example"),
 #'        table_id = "bn9d8iesz",
 #'        report_id = "1")
 #'
 #'    # Get rows 3 to 6 from a report
 #'    my_tibble <- qb_run(subdomain = "abc.quickbase.com",
-#'        user_token = keyring::key_get("qb_example"),
+#'        token = keyring::key_get("qb_example"),
 #'        table_id = "bn9d8iesz",
 #'        report_id = "1",
 #'        skip = 2,
 #'        top = 3)
 #' }
-qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
+qb_run <- function(subdomain, token, table_id, report_id, agent = NULL,
                    skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
-  stopifnot(is.character(subdomain), is.character(user_token), is.character(table_id),
+  stopifnot(is.character(subdomain), is.character(token), is.character(table_id),
             is.character(report_id), is.numeric(skip), is.numeric(top),
             is.logical(type_suffix), is.logical(paginate), length(subdomain) == 1,
-            length(user_token) == 1, length(table_id) == 1, length(report_id) == 1)
+            length(token) == 1, length(table_id) == 1, length(report_id) == 1)
 
-  if(!stringr::str_detect(user_token, "^QB-USER-TOKEN ")){
-    user_token <- stringr::str_c("QB-USER-TOKEN ", user_token)
+  if(!stringr::str_detect(token, "^QB-USER-TOKEN ") &
+     !stringr::str_detect(token, "^QB-TEMP-TOKEN ")){
+    token <- stringr::str_c("QB-USER-TOKEN ", token)
   }
 
   if(!stringr::str_detect(subdomain, "\\.+")){
@@ -66,8 +67,7 @@ qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
   }
 
   # Call API
-  print("Calling Quickbase API")
-  data_text <- run_report(subdomain, user_token, table_id, report_id, agent, skip, top, paginate)
+  data_text <- run_report(subdomain, token, table_id, report_id, agent, skip, top, paginate)
 
   # Prepare field labels for renaming values object
   data_fields <- data_text[[2]] %>%
@@ -105,7 +105,7 @@ qb_run <- function(subdomain, user_token, table_id, report_id, agent = NULL,
 
 #' Calls QB API 'run report' function
 #' @noRd
-run_report <- function(subdomain, user_token, table_id, report_id, agent,
+run_report <- function(subdomain, token, table_id, report_id, agent,
                        skip, top, paginate, pages = NULL, page_skip = 0){
 
   # Needed when paginating
@@ -122,12 +122,10 @@ run_report <- function(subdomain, user_token, table_id, report_id, agent,
                          httr::accept_json(),
                          httr::add_headers("QB-Realm-Hostname" = subdomain,
                                            "User-Agent" = agent,
-                                           "Authorization" = user_token))
+                                           "Authorization" = token))
 
   # Stop if HTTP request fails
   httr::stop_for_status(data_raw)
-
-  print(data_raw)
 
   # Extract JSON payload from HTTP response and flatten
   tryCatch(
@@ -153,7 +151,7 @@ run_report <- function(subdomain, user_token, table_id, report_id, agent,
 
     print("Dataset too large for single call, paginating...")
 
-    return(run_report(subdomain, user_token, table_id, report_id, agent,
+    return(run_report(subdomain, token, table_id, report_id, agent,
                       skip, top, paginate, pages, skip + nrow(pages)))
 
   } else {

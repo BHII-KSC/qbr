@@ -39,9 +39,9 @@ library(qbr)
 
 # Get data from a Quickbase report as a tibble
 qb_run(subdomain = "bhi",
-       user_token = keyring::key_get("qb_example"),
+       token = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
-       report_id = "1")
+       report_id = "7")
 
 ```
 

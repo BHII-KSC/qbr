@@ -6,7 +6,7 @@
 \usage{
 qb_run(
   subdomain,
-  user_token,
+  token,
   table_id,
   report_id,
   agent = NULL,
@@ -20,7 +20,7 @@ qb_run(
 \item{subdomain}{Character vector with one element. Found at the beginning of
 the Quickbase URL. Realm specific.}
 
-\item{user_token}{Character vector with one element. Created in 'My
+\item{token}{Character vector with one element. Created in 'My
 Preferences' under 'Manage user tokens' link.}
 
 \item{table_id}{Character vector with one element. Found in the URL of a
@@ -55,13 +55,13 @@ A tibble.
 
    # Get all data in a report
    my_tibble <- qb_run(subdomain = "abc",
-       user_token = keyring::key_get("qb_example"),
+       token = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "1")
 
    # Get rows 3 to 6 from a report
    my_tibble <- qb_run(subdomain = "abc.quickbase.com",
-       user_token = keyring::key_get("qb_example"),
+       token = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "1",
        skip = 2,
@@ -69,6 +69,6 @@ A tibble.
 }
 }
 \references{
-\href{https://developer.quickbase.com/}{Quickbase API
+\href{https://developer.quickbase.com}{Quickbase API
 documentation}
 }
