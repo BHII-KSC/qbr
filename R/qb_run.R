@@ -149,8 +149,6 @@ run_report <- function(subdomain, token, table_id, report_id, agent,
   # If not last page, recur
   if(meta$totalRecords - skip > nrow(pages) & (nrow(pages) < top | top == 0) & paginate){
 
-    print("Dataset too large for single call, paginating...")
-
     return(run_report(subdomain, token, table_id, report_id, agent,
                       skip, top, paginate, pages, skip + nrow(pages)))
 

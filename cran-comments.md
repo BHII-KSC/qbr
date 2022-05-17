@@ -1,4 +1,8 @@
-## Resubmission
+## Resubmission 2022-05-17
+In this resubmitted version I:
+* Removed a third instance of the print() function (qb_run)
+
+## Resubmission 2022-05-16
 In this resubmitted version I:
 * Reworded the package description in DESCRIPTION to avoid the redundant opener "Functions to"
 * Added a web reference for the 'Quickbase' JSON API in the description of DESCRIPTION
