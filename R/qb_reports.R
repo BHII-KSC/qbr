@@ -1,6 +1,6 @@
 #' Run a Quickbase report
 #'
-#' \code{qb_run} asks the Quickbase API to run a report and returns its data.
+#' \code{run_report} asks the Quickbase API to run a report and returns its data.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -35,20 +35,20 @@
 #' \dontrun{
 #'
 #'    # Get all data in a report
-#'    my_tibble <- qb_run(subdomain = "abc",
+#'    my_tibble <- run_report(subdomain = "abc",
 #'        token = keyring::key_get("qb_example"),
 #'        table_id = "bn9d8iesz",
 #'        report_id = "1")
 #'
 #'    # Get rows 3 to 6 from a report
-#'    my_tibble <- qb_run(subdomain = "abc.quickbase.com",
+#'    my_tibble <- run_report(subdomain = "abc.quickbase.com",
 #'        token = keyring::key_get("qb_example"),
 #'        table_id = "bn9d8iesz",
 #'        report_id = "1",
 #'        skip = 2,
 #'        top = 3)
 #' }
-qb_run <- function(subdomain, token, table_id, report_id, agent = NULL,
+run_report <- function(subdomain, token, table_id, report_id, agent = NULL,
                    skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
@@ -67,7 +67,7 @@ qb_run <- function(subdomain, token, table_id, report_id, agent = NULL,
   }
 
   # Call API
-  data_text <- run_report(subdomain, token, table_id, report_id, agent, skip, top, paginate)
+  data_text <- qb_run_report(subdomain, token, table_id, report_id, agent, skip, top, paginate)
 
   # Prepare field labels for renaming values object
   data_fields <- data_text[[2]] %>%
@@ -105,7 +105,7 @@ qb_run <- function(subdomain, token, table_id, report_id, agent = NULL,
 
 #' Calls QB API 'run report' function
 #' @noRd
-run_report <- function(subdomain, token, table_id, report_id, agent,
+qb_run_report <- function(subdomain, token, table_id, report_id, agent,
                        skip, top, paginate, pages = NULL, page_skip = 0){
 
   # Needed when paginating
@@ -149,7 +149,7 @@ run_report <- function(subdomain, token, table_id, report_id, agent,
   # If not last page, recur
   if(meta$totalRecords - skip > nrow(pages) & (nrow(pages) < top | top == 0) & paginate){
 
-    return(run_report(subdomain, token, table_id, report_id, agent,
+    return(qb_run_report(subdomain, token, table_id, report_id, agent,
                       skip, top, paginate, pages, skip + nrow(pages)))
 
   } else {

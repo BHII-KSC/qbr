@@ -21,14 +21,14 @@ You can install the development version of qbr like so:
 ## Usage
 
 It is often cumbersome to manually download data from Quickbase to work
-on it in R. The qb_run function makes it easy to extract report data via
-the Quickbase JSON API:
+on it in R. The run_report function makes it easy to extract report data
+via the Quickbase JSON API:
 
 ``` r
 library(qbr)
 
 # Get data from a Quickbase report as a tibble
-qb_run(subdomain = "bhi",
+run_report(subdomain = "bhi",
        token = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "7")
@@ -70,5 +70,5 @@ error resulting from the use of these extended characters.
 
 This package makes no attempt to convert data types. Number fields in
 Quickbase may well be interpreted in the resulting tibble as characters.
-The qb_run function does provide a type_suffix argument to allow you to
-discern the intended datatype more easily.
+The run_report function does provide a type_suffix argument to allow you
+to discern the intended datatype more easily.
