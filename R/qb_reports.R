@@ -6,8 +6,8 @@
 #'
 #' @param subdomain Character vector with one element. Found at the beginning of
 #'   the Quickbase URL. Realm specific.
-#' @param token Character vector with one element. Created in 'My
-#'   Preferences' under 'Manage user tokens' link.
+#' @param auth Character vector with one element. The Quickbase authentication
+#'   scheme you are using to authenticate the request (e.g., user token).
 #' @param table_id Character vector with one element. Found in the URL of a
 #'   Quickbase table between /db/ and ?
 #' @param report_id Character vector with one element. Found in the 'Reports &
@@ -36,30 +36,30 @@
 #'
 #'    # Get all data in a report
 #'    my_tibble <- run_report(subdomain = "abc",
-#'        token = keyring::key_get("qb_example"),
+#'        auth = keyring::key_get("qb_example"),
 #'        table_id = "bn9d8iesz",
 #'        report_id = "1")
 #'
 #'    # Get rows 3 to 6 from a report
 #'    my_tibble <- run_report(subdomain = "abc.quickbase.com",
-#'        token = keyring::key_get("qb_example"),
+#'        auth = keyring::key_get("qb_example"),
 #'        table_id = "bn9d8iesz",
 #'        report_id = "1",
 #'        skip = 2,
 #'        top = 3)
 #' }
-run_report <- function(subdomain, token, table_id, report_id, agent = NULL,
+run_report <- function(subdomain, auth, table_id, report_id, agent = NULL,
                    skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
-  stopifnot(is.character(subdomain), is.character(token), is.character(table_id),
+  stopifnot(is.character(subdomain), is.character(auth), is.character(table_id),
             is.character(report_id), is.numeric(skip), is.numeric(top),
             is.logical(type_suffix), is.logical(paginate), length(subdomain) == 1,
-            length(token) == 1, length(table_id) == 1, length(report_id) == 1)
+            length(auth) == 1, length(table_id) == 1, length(report_id) == 1)
 
-  if(!stringr::str_detect(token, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(token, "^QB-TEMP-TOKEN ")){
-    token <- stringr::str_c("QB-USER-TOKEN ", token)
+  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
+     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
+    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
   }
 
   if(!stringr::str_detect(subdomain, "\\.+")){
@@ -67,7 +67,7 @@ run_report <- function(subdomain, token, table_id, report_id, agent = NULL,
   }
 
   # Call API
-  data_text <- qb_run_report(subdomain, token, table_id, report_id, agent, skip, top, paginate)
+  data_text <- qb_run_report(subdomain, auth, table_id, report_id, agent, skip, top, paginate)
 
   # Prepare field labels for renaming values object
   data_fields <- data_text[[2]] %>%
@@ -105,7 +105,7 @@ run_report <- function(subdomain, token, table_id, report_id, agent = NULL,
 
 #' Calls QB API 'run report' function
 #' @noRd
-qb_run_report <- function(subdomain, token, table_id, report_id, agent,
+qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
                        skip, top, paginate, pages = NULL, page_skip = 0){
 
   # Needed when paginating
@@ -122,7 +122,7 @@ qb_run_report <- function(subdomain, token, table_id, report_id, agent,
                          httr::accept_json(),
                          httr::add_headers("QB-Realm-Hostname" = subdomain,
                                            "User-Agent" = agent,
-                                           "Authorization" = token))
+                                           "Authorization" = auth))
 
   # Stop if HTTP request fails
   httr::stop_for_status(data_raw)
@@ -149,7 +149,7 @@ qb_run_report <- function(subdomain, token, table_id, report_id, agent,
   # If not last page, recur
   if(meta$totalRecords - skip > nrow(pages) & (nrow(pages) < top | top == 0) & paginate){
 
-    return(qb_run_report(subdomain, token, table_id, report_id, agent,
+    return(qb_run_report(subdomain, auth, table_id, report_id, agent,
                       skip, top, paginate, pages, skip + nrow(pages)))
 
   } else {

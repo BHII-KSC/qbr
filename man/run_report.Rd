@@ -6,7 +6,7 @@
 \usage{
 run_report(
   subdomain,
-  token,
+  auth,
   table_id,
   report_id,
   agent = NULL,
@@ -20,8 +20,8 @@ run_report(
 \item{subdomain}{Character vector with one element. Found at the beginning of
 the Quickbase URL. Realm specific.}
 
-\item{token}{Character vector with one element. Created in 'My
-Preferences' under 'Manage user tokens' link.}
+\item{auth}{Character vector with one element. The Quickbase authentication
+scheme you are using to authenticate the request (e.g., user token).}
 
 \item{table_id}{Character vector with one element. Found in the URL of a
 Quickbase table between /db/ and ?}
@@ -55,13 +55,13 @@ A tibble.
 
    # Get all data in a report
    my_tibble <- run_report(subdomain = "abc",
-       token = keyring::key_get("qb_example"),
+       auth = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "1")
 
    # Get rows 3 to 6 from a report
    my_tibble <- run_report(subdomain = "abc.quickbase.com",
-       token = keyring::key_get("qb_example"),
+       auth = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "1",
        skip = 2,

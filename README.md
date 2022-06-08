@@ -4,6 +4,11 @@
 # qbr
 
 <!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/qbr)](https://cran.r-project.org/package=qbr)
+[![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/qbr)](https://cran.r-project.org/package=qbr)
 <!-- badges: end -->
 
 The goal of qbr is to make it easy to interact with Quickbase’s JSON
@@ -29,7 +34,7 @@ library(qbr)
 
 # Get data from a Quickbase report as a tibble
 run_report(subdomain = "bhi",
-       token = keyring::key_get("qb_example"),
+       auth = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "7")
 #> # A tibble: 7 × 5
@@ -56,22 +61,13 @@ Its sometimes helpful to manage user tokens programmatically:
 library(qbr)
 
 # Clone a user token twice. The 'clone_name' must be unique. 
-token_a <- clone_token(subdomain = "bhi", 
-                       auth = keyring::key_get("qb_example"),
-                       clone_name = "Token A",
-                       clone_desc = "A cloned token")
-
-token_b <- clone_token(subdomain = "bhi", 
-                       auth = keyring::key_get("qb_example"),
-                       clone_name = "Token B",
-                       clone_desc = "Another cloned token")
-
-# The token passed to 'auth' is deactivated. Token supplied must be active.
-deactivate_token(subdomain = "bhi", auth = token_a)
-#> Token deactivated
+token <- clone_token(subdomain = "bhi", 
+                     auth = keyring::key_get("qb_example"),
+                     clone_name = "My new token",
+                     clone_desc = "A token cloned by an R script")
 
 # The token passed to 'auth' is deleted. Token supplied must be active.
-delete_token(subdomain = "bhi", auth = token_b)
+delete_token(subdomain = "bhi", auth = token)
 #> Token deleted
 ```
 
