@@ -50,6 +50,31 @@ Quickbase report (recursively if needed to handle the API’s
 auto-pagination) and then makes the data tidy using ‘tidyverse’
 principles.
 
+Its sometimes helpful to manage user tokens programmatically:
+
+``` r
+library(qbr)
+
+# Clone a user token twice. The 'clone_name' must be unique. 
+token_a <- clone_token(subdomain = "bhi", 
+                       auth = keyring::key_get("qb_example"),
+                       clone_name = "Token A",
+                       clone_desc = "A cloned token")
+
+token_b <- clone_token(subdomain = "bhi", 
+                       auth = keyring::key_get("qb_example"),
+                       clone_name = "Token B",
+                       clone_desc = "Another cloned token")
+
+# The token passed to 'auth' is deactivated. Token supplied must be active.
+deactivate_token(subdomain = "bhi", auth = token_a)
+#> Token deactivated
+
+# The token passed to 'auth' is deleted. Token supplied must be active.
+delete_token(subdomain = "bhi", auth = token_b)
+#> Token deleted
+```
+
 ## Complex data types
 
 This packages returns some field types slightly differently to a
