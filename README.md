@@ -26,8 +26,8 @@ You can install the development version of qbr like so:
 ## Usage
 
 It is often cumbersome to manually download data from Quickbase to work
-on it in R. The run_report function makes it easy to extract report data
-via the Quickbase JSON API:
+on it in R. `run_report` makes it easy to extract report data via the
+Quickbase JSON API:
 
 ``` r
 library(qbr)
@@ -55,12 +55,35 @@ Quickbase report (recursively if needed to handle the API’s
 auto-pagination) and then makes the data tidy using ‘tidyverse’
 principles.
 
-Its sometimes helpful to manage user tokens programmatically:
+If you don’t know the report ID of the report you want to retrieve data
+from, you can use `get_reports` to retrieve metadata about all reports
+in a table:
 
 ``` r
 library(qbr)
 
-# Clone a user token twice. The 'clone_name' must be unique. 
+get_reports(subdomain = "bhi",
+            auth = keyring::key_get("qb_example"),
+            table_id = "bn9d8iesz")
+#> [1] "https://api.quickbase.com/v1/reports?tableId=bn9d8iesz"
+#> # A tibble: 5 × 13
+#>   description id    name  type  usedCount usedLast properties.disp… query.fields
+#>   <chr>       <chr> <chr> <chr>     <int> <chr>    <lgl>            <list>      
+#> 1 ""          6     Aspi… table        22 2022-05… FALSE            <int [25]>  
+#> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
+#> 3 ""          1     List… table       103 2022-06… FALSE            <int [13]>  
+#> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
+#> 5 ""          7     qbr … table        28 2022-06… FALSE            <int [5]>   
+#> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
+#> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
+```
+
+It’s sometimes helpful to manage user tokens programmatically:
+
+``` r
+library(qbr)
+
+# Clone a user token. The 'clone_name' must be unique. 
 token <- clone_token(subdomain = "bhi", 
                      auth = keyring::key_get("qb_example"),
                      clone_name = "My new token",

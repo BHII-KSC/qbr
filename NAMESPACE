@@ -3,5 +3,7 @@
 export(clone_token)
 export(deactivate_token)
 export(delete_token)
+export(get_report)
+export(get_reports)
 export(run_report)
 importFrom(magrittr,"%>%")

@@ -34,7 +34,7 @@ You can install the development version of qbr like so:
 ## Usage
 
 It is often cumbersome to manually download data from Quickbase to work on it in R.
-The run_report function makes it easy to extract report data via the Quickbase JSON API:
+`run_report` makes it easy to extract report data via the Quickbase JSON API:
 
 ```{r}
 library(qbr)
@@ -52,12 +52,25 @@ is non-tabular JSON. This function extracts data from the Quickbase report
 (recursively if needed to handle the API's auto-pagination) and then makes the
 data tidy using 'tidyverse' principles. 
 
-Its sometimes helpful to manage user tokens programmatically:
+
+If you don't know the report ID of the report you want to retrieve data from,
+you can use `get_reports` to retrieve metadata about all reports in a table:
 
 ```{r}
 library(qbr)
 
-# Clone a user token twice. The 'clone_name' must be unique. 
+get_reports(subdomain = "bhi",
+            auth = keyring::key_get("qb_example"),
+            table_id = "bn9d8iesz")
+```
+
+
+It's sometimes helpful to manage user tokens programmatically:
+
+```{r}
+library(qbr)
+
+# Clone a user token. The 'clone_name' must be unique. 
 token <- clone_token(subdomain = "bhi", 
                      auth = keyring::key_get("qb_example"),
                      clone_name = "My new token",

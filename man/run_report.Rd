@@ -2,7 +2,7 @@
 % Please edit documentation in R/qb_reports.R
 \name{run_report}
 \alias{run_report}
-\title{Run a Quickbase report}
+\title{Run a report}
 \usage{
 run_report(
   subdomain,

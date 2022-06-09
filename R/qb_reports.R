@@ -1,4 +1,4 @@
-#' Run a Quickbase report
+#' Run a report
 #'
 #' \code{run_report} asks the Quickbase API to run a report and returns its data.
 #'
@@ -156,4 +156,103 @@ qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
     return(list("data" = pages, "fields" = data_text[[2]]))
   }
 
+}
+
+
+#' Get a report
+#'
+#' \code{get_report} Retrieves metadata about the specified Quickbase report.
+#'
+#' @param subdomain Character vector with one element. Found at the beginning of
+#'   the Quickbase URL. Realm specific.
+#' @param auth Character vector with one element. The Quickbase authentication
+#'   scheme you are using to authenticate the request (e.g., user token).
+#' @param table_id Character vector with one element. Found in the URL of a
+#'   Quickbase table between /db/ and ?
+#' @param report_id Character vector with one element. Found in the 'Reports &
+#'   Charts' page in Quickbase and in the report URL.
+#' @param agent Optional. Character vector with one element. Describes
+#'   user/agent making API call.
+#'
+#' @return A named list.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'    get_report(subdomain = "abc",
+#'               auth = keyring::key_get("qb_example"),
+#'               table_id = "bn9d8iesz",
+#'               report_id = "7")
+#' }
+get_report <- function(subdomain, auth, table_id, report_id, agent = NULL){
+
+  # Validate arguments and fix where possible
+  stopifnot(is.character(report_id), length(report_id) == 1)
+
+  qb_get_report(subdomain, auth, table_id, report_id, agent)
+}
+
+
+#' Get reports for a table
+#'
+#' \code{get_reports} Retrieves metadata for each report in a table.
+#'
+#' @param subdomain Character vector with one element. Found at the beginning of
+#'   the Quickbase URL. Realm specific.
+#' @param auth Character vector with one element. The Quickbase authentication
+#'   scheme you are using to authenticate the request (e.g., user token).
+#' @param table_id Character vector with one element. Found in the URL of a
+#'   Quickbase table between /db/ and ?
+#' @param agent Optional. Character vector with one element. Describes
+#'   user/agent making API call.
+#'
+#' @return A tibble.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'    get_reports(subdomain = "abc",
+#'               auth = keyring::key_get("qb_example"),
+#'               table_id = "bn9d8iesz")
+#' }
+get_reports <- function(subdomain, auth, table_id, agent = NULL){
+  reports <- qb_get_report(subdomain, auth, table_id, agent = agent)
+  tibble::as_tibble(reports)
+}
+
+
+qb_get_report <- function(subdomain, auth, table_id, report_id = NULL, agent){
+
+  # Validate arguments and fix where possible
+  stopifnot(is.character(subdomain), is.character(auth), is.character(table_id),
+            length(subdomain) == 1, length(auth) == 1, length(table_id) == 1)
+
+  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
+     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
+    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
+  }
+
+  if(!stringr::str_detect(subdomain, "\\.+")){
+    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
+  }
+
+  qb_url <- ifelse(is.null(report_id),
+                   paste0("https://api.quickbase.com/v1/reports", "?tableId=", table_id),
+                   paste0("https://api.quickbase.com/v1/reports/", report_id, "?tableId=", table_id))
+
+  # Deliver API call to QB via an HTTP request, store response
+  data_raw <- httr::GET(qb_url,
+                        httr::accept_json(),
+                        httr::add_headers("QB-Realm-Hostname" = subdomain,
+                                          "User-Agent" = agent,
+                                          "Authorization" = auth))
+
+  # Stop if HTTP request fails
+  httr::stop_for_status(data_raw)
+
+  # Extract JSON payload from HTTP response and flatten
+  tryCatch(
+    data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = TRUE),
+    error = function(e)
+      stop("The response could not be parsed."))
 }
