@@ -122,3 +122,52 @@ delete_app <- function(subdomain, auth, app_id, app_name, agent = NULL){
     error = function(e)
       return(req))
 }
+
+
+#' Get app events
+#'
+#' \code{get_app_events} Get a tibble of events that can be triggered based on
+#' data or user actions in this application, includes: Email notification,
+#' Reminders, Subscriptions, QB Actions, Webhooks, record change triggered
+#' Automations (does not include scheduled).
+#'
+#' @template subdomain
+#' @template auth
+#' @template app_id
+#' @template agent
+#'
+#' @return A tibble.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'    get_app_events(subdomain = "abc",
+#'                   auth = keyring::key_get("qb_example"),
+#'                   app_id = "bn9d8f78g")
+#' }
+get_app_events <- function(subdomain, auth, app_id, agent = NULL){
+
+  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
+     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
+    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
+  }
+
+  if(!stringr::str_detect(subdomain, "\\.+")){
+    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
+  }
+
+  qb_url <- paste("https://api.quickbase.com/v1/apps", app_id, "events", sep = "/")
+
+  req <- httr::GET(url = qb_url,
+                   httr::accept_json(),
+                   httr::add_headers("QB-Realm-Hostname" = subdomain,
+                                     "User-Agent" = agent,
+                                     "Authorization" = auth))
+
+  tryCatch(
+    events <- jsonlite::fromJSON(httr::content(req, as = "text"), flatten = TRUE),
+    error = function(e)
+      return(req))
+
+  return(tibble::as_tibble(events))
+}
