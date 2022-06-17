@@ -11,7 +11,7 @@ delete_token(subdomain, auth, agent = NULL)
 the Quickbase URL. Realm specific.}
 
 \item{auth}{Character vector with one element. The Quickbase authentication
-scheme you are using to authenticate the request.}
+scheme you are using to authenticate the request (e.g., user token).}
 
 \item{agent}{Optional. Character vector with one element. Describes
 user/agent making API call.}
@@ -20,7 +20,7 @@ user/agent making API call.}
 A message confirming deactivation was successful.
 }
 \description{
-Delete a user token
+\code{delete_token} permanently deletes an active user token.
 }
 \examples{
 \dontrun{

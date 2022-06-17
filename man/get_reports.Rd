@@ -23,7 +23,7 @@ user/agent making API call.}
 A tibble.
 }
 \description{
-\code{get_reports} Retrieves metadata for each report in a table.
+\code{get_reports} retrieves metadata for each report in a table.
 }
 \examples{
 \dontrun{

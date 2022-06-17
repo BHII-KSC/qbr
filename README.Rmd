@@ -81,6 +81,23 @@ delete_token(subdomain = "bhi", auth = token)
 
 ```
 
+
+You can manage apps using the app functions:
+```{r}
+library(qbr)
+
+# Copy an app and print the new app's ID
+app <- copy_app(subdomain = "bhi",
+                auth = keyring::key_get("qb_example"),
+          	    app_id = "bn9d8f78g",
+          	    app_name = "R Testing copy",
+          	    app_desc = "Used to test copy_app() from qbr package",
+          	    keep_data = TRUE)
+
+print(app$id)
+
+```
+
 ## Complex data types
 
 This packages returns some field types slightly differently to a Quickbase report:

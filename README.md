@@ -40,8 +40,8 @@ run_report(subdomain = "bhi",
 #> # A tibble: 7 × 5
 #>   `Date assessed` Accessible            Intuitive  `Record ID#` `Respondent ty…`
 #>   <chr>           <chr>                 <chr>             <int> <chr>           
-#> 1 2018-12-19      4 - Somewhat agree    5 - Stron…            1 Data analyst    
-#> 2 2018-12-19      4 - Somewhat agree    4 - Somew…            2 Data analyst    
+#> 1 2018-12-19      4 - Somewhat agree    4 - Somew…            2 Data analyst    
+#> 2 2018-12-19      4 - Somewhat agree    5 - Stron…            1 Data analyst    
 #> 3 2018-12-19      2 - Somewhat disagree 1 - Stron…            3 Evaluator       
 #> 4 2018-12-19      4 - Somewhat agree    3 - Neutr…            4 Evaluator       
 #> 5 2019-12-04      3 - Neutral           2 - Somew…           20 Data analyst    
@@ -65,15 +65,14 @@ library(qbr)
 get_reports(subdomain = "bhi",
             auth = keyring::key_get("qb_example"),
             table_id = "bn9d8iesz")
-#> [1] "https://api.quickbase.com/v1/reports?tableId=bn9d8iesz"
 #> # A tibble: 5 × 13
 #>   description id    name  type  usedCount usedLast properties.disp… query.fields
 #>   <chr>       <chr> <chr> <chr>     <int> <chr>    <lgl>            <list>      
-#> 1 ""          6     Aspi… table        22 2022-05… FALSE            <int [25]>  
+#> 1 ""          6     Aspi… table        28 2022-06… FALSE            <int [25]>  
 #> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
-#> 3 ""          1     List… table       103 2022-06… FALSE            <int [13]>  
+#> 3 ""          1     List… table       105 2022-06… FALSE            <int [13]>  
 #> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        28 2022-06… FALSE            <int [5]>   
+#> 5 ""          7     qbr … table        30 2022-06… FALSE            <int [5]>   
 #> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
 #> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
 ```
@@ -92,6 +91,23 @@ token <- clone_token(subdomain = "bhi",
 # The token passed to 'auth' is deleted. Token supplied must be active.
 delete_token(subdomain = "bhi", auth = token)
 #> Token deleted
+```
+
+You can manage apps using the app functions:
+
+``` r
+library(qbr)
+
+# Copy an app and print the new app's ID
+app <- copy_app(subdomain = "bhi",
+                auth = keyring::key_get("qb_example"),
+                app_id = "bn9d8f78g",
+                app_name = "R Testing copy",
+                app_desc = "Used to test copy_app() from qbr package",
+                keep_data = TRUE)
+
+print(app$id)
+#> [1] "bsf5hphe5"
 ```
 
 ## Complex data types

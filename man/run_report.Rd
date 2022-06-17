@@ -42,7 +42,7 @@ starting at the top of a record set.}
 with its Quickbase data type.}
 
 \item{paginate}{Optional. Logical. Set TRUE to recursively call the API until
-all report pages are collected}
+all report pages are collected.}
 }
 \value{
 A tibble.

@@ -4,16 +4,11 @@
 #'
 #' @importFrom magrittr %>%
 #'
-#' @param subdomain Character vector with one element. Found at the beginning of
-#'   the Quickbase URL. Realm specific.
-#' @param auth Character vector with one element. The Quickbase authentication
-#'   scheme you are using to authenticate the request (e.g., user token).
-#' @param table_id Character vector with one element. Found in the URL of a
-#'   Quickbase table between /db/ and ?
-#' @param report_id Character vector with one element. Found in the 'Reports &
-#'   Charts' page in Quickbase and in the report URL.
-#' @param agent Optional. Character vector with one element. Describes
-#'   user/agent making API call.
+#' @template subdomain
+#' @template auth
+#' @template table_id
+#' @template report_id
+#' @template agent
 #' @param skip Optional. Integer. The number of rows to skip from the top of a
 #'   record set.
 #' @param top Optional. Integer. The limit on the number of records to pull
@@ -21,7 +16,7 @@
 #' @param type_suffix Optional. Logical. Set TRUE to append each field label
 #'   with its Quickbase data type.
 #' @param paginate Optional. Logical. Set TRUE to recursively call the API until
-#'   all report pages are collected
+#'   all report pages are collected.
 #'
 #' @return A tibble.
 #'
@@ -161,18 +156,13 @@ qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
 
 #' Get a report
 #'
-#' \code{get_report} Retrieves metadata about the specified Quickbase report.
+#' \code{get_report} retrieves metadata about the specified Quickbase report.
 #'
-#' @param subdomain Character vector with one element. Found at the beginning of
-#'   the Quickbase URL. Realm specific.
-#' @param auth Character vector with one element. The Quickbase authentication
-#'   scheme you are using to authenticate the request (e.g., user token).
-#' @param table_id Character vector with one element. Found in the URL of a
-#'   Quickbase table between /db/ and ?
-#' @param report_id Character vector with one element. Found in the 'Reports &
-#'   Charts' page in Quickbase and in the report URL.
-#' @param agent Optional. Character vector with one element. Describes
-#'   user/agent making API call.
+#' @template subdomain
+#' @template auth
+#' @template table_id
+#' @template report_id
+#' @template agent
 #'
 #' @return A named list.
 #' @export
@@ -195,16 +185,12 @@ get_report <- function(subdomain, auth, table_id, report_id, agent = NULL){
 
 #' Get reports for a table
 #'
-#' \code{get_reports} Retrieves metadata for each report in a table.
+#' \code{get_reports} retrieves metadata for each report in a table.
 #'
-#' @param subdomain Character vector with one element. Found at the beginning of
-#'   the Quickbase URL. Realm specific.
-#' @param auth Character vector with one element. The Quickbase authentication
-#'   scheme you are using to authenticate the request (e.g., user token).
-#' @param table_id Character vector with one element. Found in the URL of a
-#'   Quickbase table between /db/ and ?
-#' @param agent Optional. Character vector with one element. Describes
-#'   user/agent making API call.
+#' @template subdomain
+#' @template auth
+#' @template table_id
+#' @template agent
 #'
 #' @return A tibble.
 #' @export

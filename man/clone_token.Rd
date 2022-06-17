@@ -17,7 +17,7 @@ clone_token(
 the Quickbase URL. Realm specific.}
 
 \item{auth}{Character vector with one element. The Quickbase authentication
-scheme you are using to authenticate the request.}
+scheme you are using to authenticate the request (e.g., user token).}
 
 \item{agent}{Optional. Character vector with one element. Describes
 user/agent making API call.}
@@ -32,7 +32,7 @@ description for the token clone.}
 A character vector with one element containing the token clone.
 }
 \description{
-\code{clone_token} Makes a copy of the supplied token and returns its value.
+\code{clone_token} makes a copy of the supplied token and returns its value.
 }
 \examples{
 \dontrun{

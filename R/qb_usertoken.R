@@ -1,13 +1,10 @@
 #' Clone a user token
 #'
-#' \code{clone_token} Makes a copy of the supplied token and returns its value.
+#' \code{clone_token} makes a copy of the supplied token and returns its value.
 #'
-#' @param subdomain Character vector with one element. Found at the beginning of
-#'   the Quickbase URL. Realm specific.
-#' @param auth Character vector with one element. The Quickbase authentication
-#'   scheme you are using to authenticate the request.
-#' @param agent Optional. Character vector with one element. Describes
-#'   user/agent making API call.
+#' @template subdomain
+#' @template auth
+#' @template agent
 #' @param clone_name Optional. Character vector with one element. Name the token
 #'   clone.
 #' @param clone_desc Optional. Character vector with one element. Provide a
@@ -34,14 +31,11 @@ clone_token <- function(subdomain, auth, agent = NULL, clone_name = NULL, clone_
 
 #' Deactivate a user token
 #'
-#' \code{deactivate_token} Makes an active user token inactive.
+#' \code{deactivate_token} makes an active user token inactive.
 #'
-#' @param subdomain Character vector with one element. Found at the beginning of
-#'   the Quickbase URL. Realm specific.
-#' @param auth Character vector with one element. The Quickbase authentication
-#'   scheme you are using to authenticate the request.
-#' @param agent Optional. Character vector with one element. Describes
-#'   user/agent making API call.
+#' @template subdomain
+#' @template auth
+#' @template agent
 #'
 #' @return A message confirming deactivation was successful.
 #' @export
@@ -58,12 +52,11 @@ deactivate_token <- function(subdomain, auth, agent = NULL){
 
 #' Delete a user token
 #'
-#' @param subdomain Character vector with one element. Found at the beginning of
-#'   the Quickbase URL. Realm specific.
-#' @param auth Character vector with one element. The Quickbase authentication
-#'   scheme you are using to authenticate the request.
-#' @param agent Optional. Character vector with one element. Describes
-#'   user/agent making API call.
+#' \code{delete_token} permanently deletes an active user token.
+#'
+#' @template subdomain
+#' @template auth
+#' @template agent
 #'
 #' @return A message confirming deactivation was successful.
 #' @export
