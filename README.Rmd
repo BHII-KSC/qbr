@@ -96,6 +96,12 @@ app <- copy_app(subdomain = "bhi",
 
 print(app$id)
 
+# Delete the newly created app
+delete_app(subdomain = "bhi",
+           auth = keyring::key_get("qb_example"),
+           app_id = app$id,
+           app_name = app$name)
+
 ```
 
 ## Complex data types

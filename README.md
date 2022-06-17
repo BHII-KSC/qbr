@@ -72,7 +72,7 @@ get_reports(subdomain = "bhi",
 #> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
 #> 3 ""          1     List… table       105 2022-06… FALSE            <int [13]>  
 #> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        30 2022-06… FALSE            <int [5]>   
+#> 5 ""          7     qbr … table        32 2022-06… FALSE            <int [5]>   
 #> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
 #> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
 ```
@@ -107,7 +107,15 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "bsf5hphe5"
+#> [1] "bsf5k85xf"
+
+# Delete the newly created app
+delete_app(subdomain = "bhi",
+           auth = keyring::key_get("qb_example"),
+           app_id = app$id,
+           app_name = app$name)
+#> $deletedAppId
+#> [1] "bsf5k85xf"
 ```
 
 ## Complex data types

@@ -73,3 +73,52 @@ copy_app <- function(subdomain, auth, app_id, app_name, app_desc = NULL,
       return(req))
 
 }
+
+
+#' Delete an app
+#'
+#' \code{delete_app} Delete an entire app, including all of the tables and data.
+#'
+#' @template subdomain
+#' @template auth
+#' @template app_id
+#' @param app_name Character vector with one element. The name of the app to be
+#'   delete. Confirms you want to delete the app.
+#' @template agent
+#'
+#' @return A list.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'    delete_app(subdomain = "abc",
+#'               auth = keyring::key_get("qb_example"),
+#'               app_id = "bsf5hphe5",
+#'               app_name = "R Testing copy")
+#' }
+delete_app <- function(subdomain, auth, app_id, app_name, agent = NULL){
+
+  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
+     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
+    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
+  }
+
+  if(!stringr::str_detect(subdomain, "\\.+")){
+    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
+  }
+
+  qb_url <- paste0("https://api.quickbase.com/v1/apps/", app_id)
+
+  req <- httr::DELETE(url = qb_url,
+                      body = list(name = app_name),
+                      encode = "json",
+                      httr::accept_json(),
+                      httr::add_headers("QB-Realm-Hostname" = subdomain,
+                                        "User-Agent" = agent,
+                                        "Authorization" = auth))
+
+  tryCatch(
+    return(httr::content(req)),
+    error = function(e)
+      return(req))
+}
