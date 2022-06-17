@@ -72,7 +72,7 @@ get_reports(subdomain = "bhi",
 #> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
 #> 3 ""          1     List… table       105 2022-06… FALSE            <int [13]>  
 #> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        33 2022-06… FALSE            <int [5]>   
+#> 5 ""          7     qbr … table        34 2022-06… FALSE            <int [5]>   
 #> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
 #> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
 ```
@@ -107,7 +107,7 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "bsf5pb94w"
+#> [1] "bsf5pg2kt"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
@@ -115,12 +115,17 @@ delete_app(subdomain = "bhi",
            app_id = app$id,
            app_name = app$name)
 #> $deletedAppId
-#> [1] "bsf5pb94w"
+#> [1] "bsf5pg2kt"
 
 # Get the triggerable events of an app
-events <- get_app_events(subdomain = "bhi",
-                         auth = keyring::key_get("qb_example"),
-                         app_id = "bn9d8f78g")
+get_app_events(subdomain = "bhi",
+               auth = keyring::key_get("qb_example"),
+               app_id = "bn9d8f78g")
+#> # A tibble: 2 × 8
+#>   isActive name     tableId type  owner.email owner.id owner.name owner.userName
+#>   <lgl>    <chr>    <chr>   <chr> <chr>       <chr>    <chr>      <chr>         
+#> 1 TRUE     Push on… bp5gg5… webh… john.erdma… 5962446… John Erdm… jerdmann      
+#> 2 TRUE     GET Goo… bp84km… webh… john.erdma… 5962446… John Erdm… jerdmann
 ```
 
 ## Complex data types

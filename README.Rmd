@@ -103,9 +103,9 @@ delete_app(subdomain = "bhi",
            app_name = app$name)
 
 # Get the triggerable events of an app
-events <- get_app_events(subdomain = "bhi",
-                         auth = keyring::key_get("qb_example"),
-                         app_id = "bn9d8f78g")
+get_app_events(subdomain = "bhi",
+               auth = keyring::key_get("qb_example"),
+               app_id = "bn9d8f78g")
 
 ```
 
