@@ -34,9 +34,9 @@ You can install the development version of qbr like so:
 | [Apps](https://developer.quickbase.com/operation/copyApp)                   | `copy_app`         | Copy an app                                                  |
 | [Apps](https://developer.quickbase.com/operation/deleteApp)                 | `delete_app`       | Delete an app                                                |
 | [Apps](https://developer.quickbase.com/operation/getAppEvents)              | `get_app_events`   | Returns a tibble of triggerable events                       |
-| [Reports]()                                                                 | `get_report`       | Returns a named list of metadata for the specified report    |
-| [Reports]()                                                                 | `get_reports`      | Returns a tibble of metadata for each report in a table      |
-| [Reports]()                                                                 | `run_report`       | Returns a tibble containing all data in the specified report |
+| [Reports](https://developer.quickbase.com/operation/getReport)              | `get_report`       | Returns a named list of metadata for the specified report    |
+| [Reports](https://developer.quickbase.com/operation/getTableReports)        | `get_reports`      | Returns a tibble of metadata for each report in a table      |
+| [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
 
 ## Usage
 
@@ -87,7 +87,7 @@ get_reports(subdomain = "bhi",
 #> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
 #> 3 ""          1     List… table       105 2022-06… FALSE            <int [13]>  
 #> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        43 2022-06… FALSE            <int [5]>   
+#> 5 ""          7     qbr … table        44 2022-06… FALSE            <int [5]>   
 #> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
 #> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
 ```
@@ -122,7 +122,7 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "bsgemntqm"
+#> [1] "bsgem2cwa"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
@@ -130,7 +130,7 @@ delete_app(subdomain = "bhi",
            app_id = app$id,
            app_name = app$name)
 #> $deletedAppId
-#> [1] "bsgemntqm"
+#> [1] "bsgem2cwa"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",
