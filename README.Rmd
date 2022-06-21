@@ -31,6 +31,21 @@ You can install the development version of qbr like so:
  install_github("BHII-KSC/qbr")
 ```
 
+## Functions
+
+|API page|Function|Description|
+|:---|:---|:---|
+|[Users](https://developer.quickbase.com/operation/getUsers)|`get_users`|Returns a tibble with details of each user in an account|
+|[User token](https://developer.quickbase.com/operation/cloneUserToken)|`clone_token`|Copy a usertoken|
+|[User token](https://developer.quickbase.com/operation/deactivateUserToken)|`deactivate_token`|Deactivate a usertoken|
+|[User token](https://developer.quickbase.com/operation/deleteUserToken)|`delete_token`|Delete a usertoken|
+|[Apps](https://developer.quickbase.com/operation/copyApp)|`copy_app`|Copy an app|
+|[Apps](https://developer.quickbase.com/operation/deleteApp)|`delete_app`|Delete an app|
+|[Apps](https://developer.quickbase.com/operation/getAppEvents)|`get_app_events`|Returns a tibble of triggerable events|
+|[Reports]()|`get_report`|Returns a named list of metadata for the specified report|
+|[Reports]()|`get_reports`|Returns a tibble of metadata for each report in a table|
+|[Reports]()|`run_report`|Returns a tibble containing all data in the specified report|
+
 ## Usage
 
 It is often cumbersome to manually download data from Quickbase to work on it in R.
@@ -134,4 +149,3 @@ This package makes no attempt to convert data types. Number fields in Quickbase
 may well be interpreted in the resulting tibble as characters. The run_report function
 does provide a type_suffix argument to allow you to discern the intended datatype
 more easily.
- 
