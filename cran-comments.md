@@ -20,5 +20,5 @@ In this resubmitted version I:
 There are currently no downstream dependencies for this package
 
 ## Comments
-Examples provided for qb_run() are in dontrun{} because I use keyring::keyget()
+Examples provided for most function are in dontrun{} because I use keyring::keyget()
 to avoid exposing real Quickbase credentials/usertokens
