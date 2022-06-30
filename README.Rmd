@@ -149,3 +149,4 @@ This package makes no attempt to convert data types. Number fields in Quickbase
 may well be interpreted in the resulting tibble as characters. The run_report function
 does provide a type_suffix argument to allow you to discern the intended datatype
 more easily.
+

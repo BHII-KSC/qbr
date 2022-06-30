@@ -98,6 +98,67 @@ run_report <- function(subdomain, auth, table_id, report_id, agent = NULL,
   return(data_clean)
 }
 
+
+
+#' Run a Quickbase report
+#'
+#' \code{qb_run} asks the Quickbase API to run a report and returns its data.
+#'
+#' @importFrom magrittr %>%
+#'
+#' @param subdomain Character vector with one element. Found at the beginning of
+#'   the Quickbase URL. Realm specific.
+#' @param token Character vector with one element. Created in 'My Preferences'
+#'   under 'Manage user tokens' link.
+#' @param table_id Character vector with one element. Found in the URL of a
+#'   Quickbase table between /db/ and ?
+#' @param report_id Character vector with one element. Found in the 'Reports &
+#'   Charts' page in Quickbase and in the report URL.
+#' @param agent Optional. Character vector with one element. Describes
+#'   user/agent making API call.
+#' @param skip Optional. Integer. The number of rows to skip from the top of a
+#'   record set.
+#' @param top Optional. Integer. The limit on the number of records to pull
+#'   starting at the top of a record set.
+#' @param type_suffix Optional. Logical. Set TRUE to append each field label
+#'   with its Quickbase data type.
+#' @param paginate Optional. Logical. Set TRUE to recursively call the API until
+#'   all report pages are collected
+#'
+#' @return A tibble.
+#'
+#'
+#' @references \href{https://developer.quickbase.com}{Quickbase API
+#'   documentation}
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#'     # Get all data in a report
+#'     my_tibble <- qb_run(subdomain = "abc",
+#'                         token = keyring::key_get("qb_example"),
+#'                         table_id = "bn9d8iesz",
+#'                         report_id = "1")
+#'
+#'     # Get rows 3 to 6 from a report
+#'     my_tibble <- qb_run(subdomain = "abc.quickbase.com",
+#'                         token = keyring::key_get("qb_example"),
+#'                         table_id = "bn9d8iesz",
+#'                         report_id = "1",
+#'                         skip = 2,
+#'                         top = 3)
+#' }
+qb_run <- function(subdomain, token, table_id, report_id, agent = NULL,
+                   skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE){
+  .Deprecated("run_report")
+  run_report(subdomain, token, table_id, report_id, agent = NULL,
+             skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE)
+}
+
+
+
 #' Calls QB API 'run report' function
 #' @noRd
 qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
