@@ -171,3 +171,69 @@ get_app_events <- function(subdomain, auth, app_id, agent = NULL){
 
   return(tibble::as_tibble(events))
 }
+
+#' Get an app
+#'
+#' \code{get_app} Get metadata for an app.
+#'
+#' @template subdomain
+#' @template auth
+#' @template app_id
+#' @template agent
+#' @param inc_sec Logical. Includes security properties if true.
+#' @param inc_var Logical. Includes app variables if true.
+#'
+#' @return A tibble.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'    get_app(subdomain = "abc",
+#'               auth = keyring::key_get("qb_example"),
+#'               app_id = "bsf5hphe5")
+#' }
+get_app <- function(subdomain, auth, app_id, agent = NULL, inc_sec = T, inc_var = T){
+
+  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
+     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
+    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
+  }
+
+  if(!stringr::str_detect(subdomain, "\\.+")){
+    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
+  }
+
+  qb_url <- paste0("https://api.quickbase.com/v1/apps/", app_id)
+
+  req <- httr::GET(url = qb_url,
+                   encode = "json",
+                   httr::accept_json(),
+                   httr::add_headers("QB-Realm-Hostname" = subdomain,
+                                     "User-Agent" = agent,
+                                     "Authorization" = auth))
+
+  tryCatch(
+    resp <- jsonlite::fromJSON(httr::content(req, as = "text"), flatten = F),
+    error = function(e)
+      return(req))
+
+  app_data <- resp[names(resp) %in% c("securityProperties", "variables") == F] %>%
+    tibble::as_tibble()
+
+
+  if(inc_sec){
+    sec <- tibble::as_tibble(resp[["securityProperties"]])
+    sec <- sec %>%
+      dplyr::rename_with(~ paste0("sec_", names(sec)))
+    app_data <- app_data %>% dplyr::bind_cols(sec)
+  }
+
+  if(inc_var){
+    var <- tibble::as_tibble(resp[["variables"]]) %>%
+      dplyr::mutate(name = paste0("var_", name)) %>%
+      tidyr::pivot_wider(names_from = name, values_from = value)
+    app_data <- app_data %>% dplyr::bind_cols(var)
+  }
+
+  return(app_data)
+}
