@@ -40,7 +40,7 @@ You can install the development version of qbr like so:
 | [Reports](https://developer.quickbase.com/operation/getReport)              | `get_report`       | Returns a named list of metadata for the specified report    |
 | [Reports](https://developer.quickbase.com/operation/getTableReports)        | `get_reports`      | Returns a tibble of metadata for each report in a table      |
 | [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
-| Extras                                                                      | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
+| N/A                                                                         | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
 
 ## Usage
 
@@ -91,7 +91,7 @@ get_reports(subdomain = "bhi",
 #> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
 #> 3 ""          1     List… table       107 2022-11… FALSE            <int [13]>  
 #> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        50 2022-11… FALSE            <int [5]>   
+#> 5 ""          7     qbr … table        51 2022-11… FALSE            <int [5]>   
 #> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
 #> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
 ```
@@ -126,15 +126,18 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "bstyri4xf"
+#> NULL
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
            auth = keyring::key_get("qb_example"),
            app_id = app$id,
            app_name = app$name)
-#> $deletedAppId
-#> [1] "bstyri4xf"
+#> $message
+#> [1] "NOT_FOUND"
+#> 
+#> $description
+#> [1] "Error APIKIT:NOT_FOUND"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",
