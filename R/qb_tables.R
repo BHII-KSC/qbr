@@ -1,6 +1,6 @@
 #' Get all tables
 #'
-#' \code{get_tables} Get metadata for all tables in an app.
+#' Get metadata for all tables in an app.
 #'
 #' @template subdomain
 #' @template auth

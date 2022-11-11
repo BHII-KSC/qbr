@@ -32,7 +32,7 @@ description for the token clone.}
 A character vector with one element containing the token clone.
 }
 \description{
-\code{clone_token} makes a copy of the supplied token and returns its value.
+Make a copy of the supplied token and returns its value.
 }
 \examples{
 \dontrun{

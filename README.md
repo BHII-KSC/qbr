@@ -31,12 +31,16 @@ You can install the development version of qbr like so:
 | [User token](https://developer.quickbase.com/operation/cloneUserToken)      | `clone_token`      | Copy a usertoken                                             |
 | [User token](https://developer.quickbase.com/operation/deactivateUserToken) | `deactivate_token` | Deactivate a usertoken                                       |
 | [User token](https://developer.quickbase.com/operation/deleteUserToken)     | `delete_token`     | Delete a usertoken                                           |
+| [Apps](https://developer.quickbase.com/operation/getApp)                    | `get_app`          | Get metadata for an app                                      |
 | [Apps](https://developer.quickbase.com/operation/copyApp)                   | `copy_app`         | Copy an app                                                  |
 | [Apps](https://developer.quickbase.com/operation/deleteApp)                 | `delete_app`       | Delete an app                                                |
 | [Apps](https://developer.quickbase.com/operation/getAppEvents)              | `get_app_events`   | Returns a tibble of triggerable events                       |
+| [Tables](https://developer.quickbase.com/operation/getAppTables)            | `get_tables`       | Get metadata for all tables in an app                        |
+| [Fields](https://developer.quickbase.com/operation/getFields)               | `get_fields`       | Get metadata for all fields in a table                       |
 | [Reports](https://developer.quickbase.com/operation/getReport)              | `get_report`       | Returns a named list of metadata for the specified report    |
 | [Reports](https://developer.quickbase.com/operation/getTableReports)        | `get_reports`      | Returns a tibble of metadata for each report in a table      |
 | [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
+| Extras                                                                      | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
 
 ## Usage
 
@@ -85,9 +89,9 @@ get_reports(subdomain = "bhi",
 #>   <chr>       <chr> <chr> <chr>     <int> <chr>    <lgl>            <list>      
 #> 1 ""          6     Aspi… table        28 2022-06… FALSE            <int [25]>  
 #> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
-#> 3 ""          1     List… table       105 2022-06… FALSE            <int [13]>  
+#> 3 ""          1     List… table       107 2022-11… FALSE            <int [13]>  
 #> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        48 2022-06… FALSE            <int [5]>   
+#> 5 ""          7     qbr … table        50 2022-11… FALSE            <int [5]>   
 #> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
 #> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
 ```
@@ -122,7 +126,7 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "bsg7kqjjj"
+#> [1] "bstyri4xf"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
@@ -130,7 +134,7 @@ delete_app(subdomain = "bhi",
            app_id = app$id,
            app_name = app$name)
 #> $deletedAppId
-#> [1] "bsg7kqjjj"
+#> [1] "bstyri4xf"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",

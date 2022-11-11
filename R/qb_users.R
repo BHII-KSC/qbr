@@ -1,6 +1,6 @@
 #' Get users
 #'
-#' \code{get_users} Get all users in an account. Provides options to limit
+#' Get all users in an account. Provides options to limit
 #' values to a set of users and/or apps.
 #'
 #' @template subdomain

@@ -2,7 +2,7 @@
 % Please edit documentation in R/qb_reports.R
 \name{get_reports}
 \alias{get_reports}
-\title{Get reports for a table}
+\title{Get all reports for a table}
 \usage{
 get_reports(subdomain, auth, table_id, agent = NULL)
 }

@@ -1,6 +1,6 @@
 #' Clone a user token
 #'
-#' \code{clone_token} makes a copy of the supplied token and returns its value.
+#' Make a copy of the supplied token and returns its value.
 #'
 #' @template subdomain
 #' @template auth
@@ -31,7 +31,7 @@ clone_token <- function(subdomain, auth, agent = NULL, clone_name = NULL, clone_
 
 #' Deactivate a user token
 #'
-#' \code{deactivate_token} makes an active user token inactive.
+#' Make an active user token inactive.
 #'
 #' @template subdomain
 #' @template auth
@@ -52,7 +52,7 @@ deactivate_token <- function(subdomain, auth, agent = NULL){
 
 #' Delete a user token
 #'
-#' \code{delete_token} permanently deletes an active user token.
+#' Permanently delete an active user token.
 #'
 #' @template subdomain
 #' @template auth

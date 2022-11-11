@@ -26,7 +26,7 @@ user/agent making API call.}
 A list.
 }
 \description{
-\code{delete_app} Delete an entire app, including all of the tables and data.
+Delete an entire app, including all of the tables and data.
 }
 \examples{
 \dontrun{

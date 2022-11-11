@@ -52,7 +52,7 @@ this request to the new app.}
 A list.
 }
 \description{
-\code{copy_app} Copy an app. Provides options to copy data and users.
+Copy an app. Provides options to copy data and users.
 }
 \examples{
 \dontrun{

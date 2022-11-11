@@ -1,6 +1,6 @@
 #' Get all fields in a table
 #'
-#' \code{get_fields} Get metadata for all fields in a table.
+#' Get metadata for all fields in a table.
 #'
 #' @template subdomain
 #' @template auth

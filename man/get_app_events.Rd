@@ -23,7 +23,7 @@ user/agent making API call.}
 A tibble.
 }
 \description{
-\code{get_app_events} Get a tibble of events that can be triggered based on
+Get a tibble of events that can be triggered based on
 data or user actions in this application, includes: Email notification,
 Reminders, Subscriptions, QB Actions, Webhooks, record change triggered
 Automations (does not include scheduled).

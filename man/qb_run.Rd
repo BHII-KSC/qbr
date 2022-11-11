@@ -48,7 +48,7 @@ all report pages are collected}
 A tibble.
 }
 \description{
-\code{qb_run} asks the Quickbase API to run a report and returns its data.
+Run a report and get its data.
 }
 \examples{
 \dontrun{

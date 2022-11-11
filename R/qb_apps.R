@@ -1,6 +1,6 @@
 #' Copy an app
 #'
-#' \code{copy_app} Copy an app. Provides options to copy data and users.
+#' Copy an app. Provides options to copy data and users.
 #'
 #' @template subdomain
 #' @template auth
@@ -77,7 +77,7 @@ copy_app <- function(subdomain, auth, app_id, app_name, app_desc = NULL,
 
 #' Delete an app
 #'
-#' \code{delete_app} Delete an entire app, including all of the tables and data.
+#' Delete an entire app, including all of the tables and data.
 #'
 #' @template subdomain
 #' @template auth
@@ -126,7 +126,7 @@ delete_app <- function(subdomain, auth, app_id, app_name, agent = NULL){
 
 #' Get app events
 #'
-#' \code{get_app_events} Get a tibble of events that can be triggered based on
+#' Get a tibble of events that can be triggered based on
 #' data or user actions in this application, includes: Email notification,
 #' Reminders, Subscriptions, QB Actions, Webhooks, record change triggered
 #' Automations (does not include scheduled).
@@ -174,14 +174,14 @@ get_app_events <- function(subdomain, auth, app_id, agent = NULL){
 
 #' Get an app
 #'
-#' \code{get_app} Get metadata for an app.
+#' Get metadata for an app.
 #'
 #' @template subdomain
 #' @template auth
 #' @template app_id
 #' @template agent
-#' @param inc_sec Logical. Includes security properties if true.
-#' @param inc_var Logical. Includes app variables if true.
+#' @param include_sec Logical. Includes security properties if true.
+#' @param include_vars Logical. Includes app variables if true.
 #'
 #' @return A tibble.
 #' @export
@@ -192,7 +192,7 @@ get_app_events <- function(subdomain, auth, app_id, agent = NULL){
 #'               auth = keyring::key_get("qb_example"),
 #'               app_id = "bsf5hphe5")
 #' }
-get_app <- function(subdomain, auth, app_id, agent = NULL, inc_sec = T, inc_var = T){
+get_app <- function(subdomain, auth, app_id, agent = NULL, include_sec = T, include_vars = T){
 
   if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
      !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
@@ -221,14 +221,14 @@ get_app <- function(subdomain, auth, app_id, agent = NULL, inc_sec = T, inc_var 
     tibble::as_tibble()
 
 
-  if(inc_sec){
+  if(include_sec){
     sec <- tibble::as_tibble(resp[["securityProperties"]])
     sec <- sec %>%
       dplyr::rename_with(~ paste0("sec_", names(sec)))
     app_data <- app_data %>% dplyr::bind_cols(sec)
   }
 
-  if(inc_var){
+  if(include_vars){
     var <- tibble::as_tibble(resp[["variables"]]) %>%
       dplyr::mutate(name = paste0("var_", name)) %>%
       tidyr::pivot_wider(names_from = name, values_from = value)

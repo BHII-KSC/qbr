@@ -4,7 +4,14 @@
 \alias{get_app}
 \title{Get an app}
 \usage{
-get_app(subdomain, auth, app_id, agent = NULL, inc_sec = T, inc_var = T)
+get_app(
+  subdomain,
+  auth,
+  app_id,
+  agent = NULL,
+  include_sec = T,
+  include_vars = T
+)
 }
 \arguments{
 \item{subdomain}{Character vector with one element. Found at the beginning of
@@ -19,15 +26,15 @@ Found in the URL of the app's homepage after /db/}
 \item{agent}{Optional. Character vector with one element. Describes
 user/agent making API call.}
 
-\item{inc_sec}{Logical. Includes security properties if true.}
+\item{include_sec}{Logical. Includes security properties if true.}
 
-\item{inc_var}{Logical. Includes app variables if true.}
+\item{include_vars}{Logical. Includes app variables if true.}
 }
 \value{
 A tibble.
 }
 \description{
-\code{get_app} Get metadata for an app.
+Get metadata for an app.
 }
 \examples{
 \dontrun{

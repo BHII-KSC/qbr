@@ -1,6 +1,6 @@
 #' Run a report
 #'
-#' \code{run_report} asks the Quickbase API to run a report and returns its data.
+#' Run a report and get its data.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -102,7 +102,7 @@ run_report <- function(subdomain, auth, table_id, report_id, agent = NULL,
 
 #' Run a Quickbase report
 #'
-#' \code{qb_run} asks the Quickbase API to run a report and returns its data.
+#' Run a report and get its data.
 #'
 #' @importFrom magrittr %>%
 #'
@@ -217,7 +217,7 @@ qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
 
 #' Get a report
 #'
-#' \code{get_report} retrieves metadata about the specified Quickbase report.
+#' Get metadata about a report.
 #'
 #' @template subdomain
 #' @template auth
@@ -244,7 +244,7 @@ get_report <- function(subdomain, auth, table_id, report_id, agent = NULL){
 }
 
 
-#' Get reports for a table
+#' Get all reports for a table
 #'
 #' \code{get_reports} retrieves metadata for each report in a table.
 #'

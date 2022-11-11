@@ -34,7 +34,7 @@ user/agent making API call.}
 A tibble.
 }
 \description{
-\code{get_fields} Get metadata for all fields in a table.
+Get metadata for all fields in a table.
 }
 \examples{
 \dontrun{

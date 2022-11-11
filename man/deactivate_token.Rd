@@ -20,7 +20,7 @@ user/agent making API call.}
 A message confirming deactivation was successful.
 }
 \description{
-\code{deactivate_token} makes an active user token inactive.
+Make an active user token inactive.
 }
 \examples{
 \dontrun{

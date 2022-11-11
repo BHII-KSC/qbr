@@ -26,7 +26,7 @@ user/agent making API call.}
 A named list.
 }
 \description{
-\code{get_report} retrieves metadata about the specified Quickbase report.
+Get metadata about a report.
 }
 \examples{
 \dontrun{
