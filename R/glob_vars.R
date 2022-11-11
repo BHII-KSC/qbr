@@ -1,1 +1,13 @@
-utils::globalVariables(c("id", "row_id", "type", "label", "vals"))
+utils::globalVariables(c("id",
+                         "row_id",
+                         "type",
+                         "label",
+                         "vals",
+                         "name",
+                         "value",
+                         "role",
+                         "roleId",
+                         "permissionType",
+                         "spaceUsed",
+                         "spaceUsedInt",
+                         "description"))

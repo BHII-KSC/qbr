@@ -1,3 +1,8 @@
+## Submission 2022-11-11
+* There were no ERRORs, WARNINGs, or NOTEs on local Windows device using check()
+* Ran devtools::check_mac_release  and rhub::check without error, 
+  warning, or notes.
+
 ## Resubmission 2022-05-17
 In this resubmitted version I:
 * Removed a third instance of the print() function (qb_run)
