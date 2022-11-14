@@ -1,3 +1,6 @@
+# qbr 1.2.2
+- Fixed an issue with parsing table size with decimal values.
+
 # qbr 1.2.1
 - Fixed an error thrown by get_fields when include_perms was set to TRUE but no custom permissions existed for fields in the table queried. 
 - Fixed an error thrown by get_app when include_vars was set to TRUE but no variables existed for an app.
