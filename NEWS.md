@@ -1,10 +1,10 @@
 # qbr 1.2.0
 Added functions to do the following:
 
--get metadata for an app
--get metadata for all tables in an app
--get metadata for all fields in a table
--summarize metadata for an app and its users, tables, and fields
+- get metadata for an app
+- get metadata for all tables in an app
+- get metadata for all fields in a table
+- summarize metadata for an app and its users, tables, and fields
 
 # qbr 1.1.0
 Added functions to do the following:  
