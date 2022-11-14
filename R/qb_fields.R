@@ -7,7 +7,8 @@
 #' @template table_id
 #' @template agent
 #' @param include_props Logical. Includes field properties if true.
-#' @param include_perms Logical. Includes field permissions if true.
+#' @param include_perms Logical. Includes custom field permissions if true. Only
+#'   returns data if custom permissions exist for at least 1 field in the table.
 #'
 #' @return A tibble.
 #' @export
@@ -54,7 +55,7 @@ get_fields <- function(subdomain, auth, table_id, agent = NULL, include_props = 
     field_data <- field_data %>% dplyr::bind_cols(props)
   }
 
-  if(include_perms){
+  if(include_perms & "permissions" %in% names(resp)){
     perms <- dplyr::bind_rows(resp[["permissions"]], .id = "id") %>%
       dplyr::mutate(role = paste("perm", role, roleId, sep = "_")) %>%
       dplyr::select(-roleId) %>%

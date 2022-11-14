@@ -28,7 +28,8 @@ user/agent making API call.}
 
 \item{include_props}{Logical. Includes field properties if true.}
 
-\item{include_perms}{Logical. Includes field permissions if true.}
+\item{include_perms}{Logical. Includes custom field permissions if true. Only
+returns data if custom permissions exist for at least 1 field in the table.}
 }
 \value{
 A tibble.

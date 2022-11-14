@@ -228,7 +228,7 @@ get_app <- function(subdomain, auth, app_id, agent = NULL, include_sec = T, incl
     app_data <- app_data %>% dplyr::bind_cols(sec)
   }
 
-  if(include_vars){
+  if(include_vars & "variables" %in% names(resp)){
     var <- tibble::as_tibble(resp[["variables"]]) %>%
       dplyr::mutate(name = paste0("var_", name)) %>%
       tidyr::pivot_wider(names_from = name, values_from = value)

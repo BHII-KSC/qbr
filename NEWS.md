@@ -1,3 +1,8 @@
+# qbr 1.2.1
+- Fixed an error thrown by get_fields when include_perms was set to TRUE but no custom permissions existed for fields in the table queried. 
+- Fixed an error thrown by get_app when include_vars was set to TRUE but no variables existed for an app.
+- Fixed an error thrown by summarize_app caused by the bugs in get_fields and get_app.
+
 # qbr 1.2.0
 Added functions to do the following:
 
