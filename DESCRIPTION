@@ -1,6 +1,6 @@
 Package: qbr
 Title: Access the 'Quickbase' JSON API
-Version: 1.2.2
+Version: 1.2.3
 Authors@R: c(
     person("John", "Erdmann", , "john.erdmann@keene.edu", role = c("aut", "cre")),
     person("Keene State College", role = c("cph", "fnd")))
@@ -12,7 +12,7 @@ BugReports: https://github.com/BHII-KSC/qbr/issues
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Imports: 
     dplyr (>= 1.0.9),
     tidyr (>= 1.2.0),
@@ -21,7 +21,8 @@ Imports:
     magrittr (>= 2.0.3),
     purrr (>= 0.3.4),
     stringr (>= 1.4.0),
-    tibble (>= 3.1.7)
+    tibble (>= 3.1.7),
+    httr2
 Suggests: 
     testthat (>= 3.0.0),
     keyring

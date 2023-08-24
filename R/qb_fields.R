@@ -31,7 +31,7 @@ get_fields <- function(subdomain, auth, table_id, agent = NULL, include_props = 
   }
 
   qb_url <- paste0("https://api.quickbase.com/v1/fields?tableId=", table_id,
-                   "&includeFieldPerms=", include_perms)
+                   "&includeFieldPerms=", tolower(include_perms))
 
   req <- httr::GET(url = qb_url,
                    encode = "json",
@@ -48,11 +48,11 @@ get_fields <- function(subdomain, auth, table_id, agent = NULL, include_props = 
   field_data <- resp[names(resp) %in% c("properties", "permissions") == F] %>%
     tibble::as_tibble()
 
-  if(include_props){
-    props <- tibble::as_tibble(resp[["properties"]])
-    props <- props %>%
-      dplyr::rename_with(~ paste0("prop_", names(props)))
-    field_data <- field_data %>% dplyr::bind_cols(props)
+  if(include_props & "properties" %in% names(resp)){
+        props <- tibble::as_tibble(resp[["properties"]])
+        props <- props %>%
+          dplyr::rename_with(~ paste0("prop_", names(props)))
+        field_data <- field_data %>% dplyr::bind_cols(props)
   }
 
   if(include_perms & "permissions" %in% names(resp)){

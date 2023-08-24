@@ -1,3 +1,11 @@
+## Submission 2023-08-23
+* There were no errors, warnings, or notes when running check() on my windows device
+* Ran devtools::check_mac_release and rhub::check on a Debian OS without error, 
+  warning, or notes.
+* This version of qbr resolves an absence of a package help file by replacing qbr.R
+  with qbr-package.R and thereby qbr-package.Rd. This problem was introduced when
+  a breaking change in roxygen2 7.0.0 (2019-11-12) went unnoticed.
+
 ## Submission 2022-11-11
 * There were no ERRORs, WARNINGs, or NOTEs on local Windows device using check()
 * Ran devtools::check_mac_release  and rhub::check without error, 

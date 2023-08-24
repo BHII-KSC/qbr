@@ -221,7 +221,7 @@ get_app <- function(subdomain, auth, app_id, agent = NULL, include_sec = T, incl
     tibble::as_tibble()
 
 
-  if(include_sec){
+  if(include_sec & "securityProperties" %in% names(resp)){
     sec <- tibble::as_tibble(resp[["securityProperties"]])
     sec <- sec %>%
       dplyr::rename_with(~ paste0("sec_", names(sec)))

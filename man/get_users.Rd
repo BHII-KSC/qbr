@@ -27,10 +27,10 @@ user/agent making API call.}
 get users. If no value is specified, the first account associated with the
 requesting user token is chosen.}
 
-\item{user_emails}{Optional. Character vector. Limit returned users to those
+\item{user_emails}{Optional. List of characters. Limit returned users to those
 specified in this list.}
 
-\item{app_ids}{Optional. Character vector. Limit returned users to those
+\item{app_ids}{Optional. List of characters. Limit returned users to those
 assigned to these app ID's. The provided app ID's should belong to the same
 account.}
 }

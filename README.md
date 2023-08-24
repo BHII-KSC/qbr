@@ -40,6 +40,7 @@ You can install the development version of qbr like so:
 | [Reports](https://developer.quickbase.com/operation/getReport)              | `get_report`       | Returns a named list of metadata for the specified report    |
 | [Reports](https://developer.quickbase.com/operation/getTableReports)        | `get_reports`      | Returns a tibble of metadata for each report in a table      |
 | [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
+| [Records](https://developer.quickbase.com/operation/deleteRecords)          | `delete_records`   | Deletes records matching query conditions                    |
 | N/A                                                                         | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
 
 ## Usage
@@ -56,16 +57,15 @@ run_report(subdomain = "bhi",
        auth = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "7")
-#> # A tibble: 7 × 5
-#>   `Date assessed` Accessible            Intuitive  `Record ID#` `Respondent ty…`
-#>   <chr>           <chr>                 <chr>             <int> <chr>           
-#> 1 2018-12-19      4 - Somewhat agree    4 - Somew…            2 Data analyst    
-#> 2 2018-12-19      4 - Somewhat agree    5 - Stron…            1 Data analyst    
-#> 3 2018-12-19      2 - Somewhat disagree 1 - Stron…            3 Evaluator       
-#> 4 2018-12-19      4 - Somewhat agree    3 - Neutr…            4 Evaluator       
-#> 5 2019-12-04      3 - Neutral           2 - Somew…           20 Data analyst    
-#> 6 2021-03-30      4 - Somewhat agree    2 - Somew…           22 Data analyst    
-#> 7 2019-11-27      4 - Somewhat agree    2 - Somew…            5 Data analyst
+#> # A tibble: 6 × 5
+#>   `Record ID#` `Date assessed` `Respondent type` Intuitive            Accessible
+#>          <int> <chr>           <chr>             <chr>                <chr>     
+#> 1            2 2018-12-19      Data analyst      4 - Somewhat agree   4 - Somew…
+#> 2            1 2018-12-19      Data analyst      5 - Strongly agree   4 - Somew…
+#> 3            3 2018-12-19      Evaluator         1 - Strongly disagr… 2 - Somew…
+#> 4            4 2018-12-19      Evaluator         3 - Neutral          4 - Somew…
+#> 5           20 2019-12-04      Data analyst      2 - Somewhat disagr… 3 - Neutr…
+#> 6            5 2019-11-27      Data analyst      2 - Somewhat disagr… 4 - Somew…
 ```
 
 Notice that this function returns a tibble even though the payload from
@@ -84,16 +84,19 @@ library(qbr)
 get_reports(subdomain = "bhi",
             auth = keyring::key_get("qb_example"),
             table_id = "bn9d8iesz")
-#> # A tibble: 5 × 13
-#>   description id    name  type  usedCount usedLast properties.disp… query.fields
-#>   <chr>       <chr> <chr> <chr>     <int> <chr>    <lgl>            <list>      
-#> 1 ""          6     Aspi… table        28 2022-06… FALSE            <int [25]>  
-#> 2 ""          5     Find… table        60 2021-11… FALSE            <int [4]>   
-#> 3 ""          1     List… table       107 2022-11… FALSE            <int [13]>  
-#> 4 "Sorted by… 2     List… table         0 <NA>     TRUE             <int [0]>   
-#> 5 ""          7     qbr … table        51 2022-11… FALSE            <int [5]>   
-#> # … with 5 more variables: query.filter <chr>, query.formulaFields <list>,
-#> #   query.groupBy <list>, query.sortBy <list>, query.tableId <chr>
+#> # A tibble: 6 × 13
+#>   description        id    name  type  usedCount usedLast properties.displayOn…¹
+#>   <chr>              <chr> <chr> <chr>     <int> <chr>    <lgl>                 
+#> 1 ""                 6     Aspi… table        32 2023-08… FALSE                 
+#> 2 ""                 5     Find… table        61 2023-08… FALSE                 
+#> 3 ""                 1     List… table       124 2023-08… FALSE                 
+#> 4 "Sorted by Date M… 2     List… table         0 <NA>     TRUE                  
+#> 5 ""                 7     qbr … table        58 2023-08… FALSE                 
+#> 6 ""                 8     qbr … table         4 2023-08… FALSE                 
+#> # ℹ abbreviated name: ¹​properties.displayOnlyNewOrChangedRecords
+#> # ℹ 6 more variables: query.fields <list>, query.filter <chr>,
+#> #   query.formulaFields <list>, query.groupBy <list>, query.sortBy <list>,
+#> #   query.tableId <chr>
 ```
 
 It’s sometimes helpful to manage user tokens programmatically:
@@ -126,28 +129,25 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> NULL
+#> [1] "btiuqitut"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
            auth = keyring::key_get("qb_example"),
            app_id = app$id,
            app_name = app$name)
-#> $message
-#> [1] "NOT_FOUND"
-#> 
-#> $description
-#> [1] "Error APIKIT:NOT_FOUND"
+#> $deletedAppId
+#> [1] "btiuqitut"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",
                auth = keyring::key_get("qb_example"),
                app_id = "bn9d8f78g")
 #> # A tibble: 2 × 8
-#>   isActive name     tableId type  owner.email owner.id owner.name owner.userName
-#>   <lgl>    <chr>    <chr>   <chr> <chr>       <chr>    <chr>      <chr>         
-#> 1 TRUE     Push on… bp5gg5… webh… john.erdma… 5962446… John Erdm… jerdmann      
-#> 2 TRUE     GET Goo… bp84km… webh… john.erdma… 5962446… John Erdm… jerdmann
+#>   type    isActive tableId  name  owner.email owner.id owner.name owner.userName
+#>   <chr>   <lgl>    <chr>    <chr> <chr>       <chr>    <chr>      <chr>         
+#> 1 webhook TRUE     bp5gg5b… Push… john.erdma… 5962446… John Erdm… jerdmann      
+#> 2 webhook TRUE     bp84kms… GET … john.erdma… 5962446… John Erdm… jerdmann
 ```
 
 ## Complex data types

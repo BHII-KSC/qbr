@@ -48,6 +48,7 @@ You can install the development version of qbr like so:
 |[Reports](https://developer.quickbase.com/operation/getReport)|`get_report`|Returns a named list of metadata for the specified report|
 |[Reports](https://developer.quickbase.com/operation/getTableReports)|`get_reports`|Returns a tibble of metadata for each report in a table|
 |[Reports](https://developer.quickbase.com/operation/runReport)|`run_report`|Returns a tibble containing all data in the specified report|
+|[Records](https://developer.quickbase.com/operation/deleteRecords)|`delete_records`|Deletes records matching query conditions|
 |N/A|`summarize_app`|Get metadata for an app and its users, tables, and fields|
 
 ## Usage

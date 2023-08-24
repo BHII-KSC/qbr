@@ -1,3 +1,13 @@
+# qbr 1.2.3
+- Added a function to delete records.
+- Revised run_report function to construct tibble with columns in the same order
+as the queried report.
+- Fixed an issue with get_users where returned users were not limited to the "app_ids" supplied.
+- Made an internal function to validate common API inputs and correct where possible.
+- Fixed a [package documentation issue](https://github.com/r-lib/roxygen2/issues/1491) that
+resulted from an unnoticed change to roxygen.
+- Began transition from httr to httr2 for API calls.
+
 # qbr 1.2.2
 - Fixed an issue with parsing table size with decimal values.
 

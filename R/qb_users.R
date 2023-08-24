@@ -9,9 +9,9 @@
 #' @param account_id Optional. Positive integer. The account ID being used to
 #'   get users. If no value is specified, the first account associated with the
 #'   requesting user token is chosen.
-#' @param user_emails Optional. Character vector. Limit returned users to those
+#' @param user_emails Optional. List of characters. Limit returned users to those
 #'   specified in this list.
-#' @param app_ids Optional. Character vector. Limit returned users to those
+#' @param app_ids Optional. List of characters. Limit returned users to those
 #'   assigned to these app ID's. The provided app ID's should belong to the same
 #'   account.
 #'
@@ -47,7 +47,7 @@ qb_get_users <- function(subdomain, auth, agent, qb_url, user_emails, app_ids,
                          page_token = NULL, user_data = NULL){
 
   req_body <- list(emails = user_emails,
-                   appIDs = app_ids,
+                   appIds = app_ids,
                    nextPageToken = page_token)
 
   req <- httr::POST(url = qb_url,
@@ -63,7 +63,7 @@ qb_get_users <- function(subdomain, auth, agent, qb_url, user_emails, app_ids,
     error = function(e)
       return(req))
 
-  user_page <- tibble::as_tibble(resp[[1]])
+  user_page <- tibble::as_tibble(resp[["users"]])
 
   if(is.null(user_data)){
     user_data <- user_page
@@ -71,9 +71,10 @@ qb_get_users <- function(subdomain, auth, agent, qb_url, user_emails, app_ids,
     user_data <- rbind(user_data, user_page)
   }
 
-  if(resp[[2]] != ""){
+  if(resp[["metadata"]][["nextPageToken"]] != ""){
     return(qb_get_users(subdomain, auth, agent, qb_url, user_emails, app_ids,
-                        page_token = resp[[2]]$nextPageToken, user_data = user_data))
+                        page_token = resp[["metadata"]][["nextPageToken"]],
+                        user_data = user_data))
   } else {
     return(user_data)
   }

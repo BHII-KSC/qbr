@@ -67,16 +67,19 @@ run_report <- function(subdomain, auth, table_id, report_id, agent = NULL,
   # Prepare field labels for renaming values object
   data_fields <- data_text[[2]] %>%
     dplyr::mutate(id = as.character(id),
-                  label_type = stringr::str_c(label, type, sep =".")) %>%
-    dplyr::arrange(id)
+                  label_type = stringr::str_c(label, type, sep ="."))
 
   # Multi-dimensional fields to drop by suffix
   drop_me <- c(".version", ".id", ".name", ".userName")
 
   tryCatch(
     data_clean <- data_text[[1]] %>%
-      dplyr::select(-dplyr::contains(drop_me)) %>%
+      dplyr::rename_with( ~ gsub("[.]value", "", .x)) %>%
+      dplyr::select(as.character(data_fields$id)) %>%
+
       dplyr::rename_with( ~ data_fields$label_type) %>%
+      dplyr::select(-dplyr::contains(drop_me)) %>%
+
       dplyr::mutate(dplyr::across(dplyr::matches("[.]multitext"), ~ lapply(., paste, collapse = "; "))) %>%
       dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ purrr::map(., "email"))) %>%
       dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ lapply(., paste, collapse = "; "))) %>%
