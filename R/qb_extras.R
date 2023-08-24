@@ -28,7 +28,7 @@ summarize_app <- function(subdomain, auth, app_id, agent = NULL){
   }
 
   app <- qbr::get_app(subdomain, auth, app_id, agent, T, T)
-  users <- qbr::get_users(subdomain, auth, agent, app_ids = app_id)
+  users <- qbr::get_users(subdomain, auth, agent, app_ids = list(app_id))
   tables <- qbr::get_tables(subdomain, auth, app_id, agent) %>%
     dplyr::mutate(spaceUsedInt = as.numeric(gsub("[[:alpha:]]|\\s", "", spaceUsed)),
                   spaceUsedMB = ifelse(grepl(" KB", spaceUsed), spaceUsedInt / 1000,
