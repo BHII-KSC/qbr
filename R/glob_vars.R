@@ -10,4 +10,5 @@ utils::globalVariables(c("id",
                          "permissionType",
                          "spaceUsed",
                          "spaceUsedInt",
-                         "description"))
+                         "description",
+                         "."))

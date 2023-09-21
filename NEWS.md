@@ -1,3 +1,6 @@
+# qbr 1.2.4
+- Added a function to insert & update records into a Quickbase table.
+
 # qbr 1.2.3
 - Added a function to delete records.
 - Revised run_report function to construct tibble with columns in the same order

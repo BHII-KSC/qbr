@@ -1,6 +1,6 @@
 Package: qbr
 Title: Access the 'Quickbase' JSON API
-Version: 1.2.3
+Version: 1.2.4
 Authors@R: c(
     person("John", "Erdmann", , "john.erdmann@keene.edu", role = c("aut", "cre")),
     person("Keene State College", role = c("cph", "fnd")))
@@ -22,7 +22,7 @@ Imports:
     purrr (>= 0.3.4),
     stringr (>= 1.4.0),
     tibble (>= 3.1.7),
-    httr2
+    httr2 (>= 0.2.3)
 Suggests: 
     testthat (>= 3.0.0),
     keyring

@@ -41,6 +41,7 @@ You can install the development version of qbr like so:
 | [Reports](https://developer.quickbase.com/operation/getTableReports)        | `get_reports`      | Returns a tibble of metadata for each report in a table      |
 | [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
 | [Records](https://developer.quickbase.com/operation/deleteRecords)          | `delete_records`   | Deletes records matching query conditions                    |
+| [Records](https://developer.quickbase.com/operation/upsert)                 | `update_records`   | Inserts and/or updates record(s)                             |
 | N/A                                                                         | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
 
 ## Usage
@@ -57,15 +58,19 @@ run_report(subdomain = "bhi",
        auth = keyring::key_get("qb_example"),
        table_id = "bn9d8iesz",
        report_id = "7")
-#> # A tibble: 6 × 5
-#>   `Record ID#` `Date assessed` `Respondent type` Intuitive            Accessible
-#>          <int> <chr>           <chr>             <chr>                <chr>     
-#> 1            2 2018-12-19      Data analyst      4 - Somewhat agree   4 - Somew…
-#> 2            1 2018-12-19      Data analyst      5 - Strongly agree   4 - Somew…
-#> 3            3 2018-12-19      Evaluator         1 - Strongly disagr… 2 - Somew…
-#> 4            4 2018-12-19      Evaluator         3 - Neutral          4 - Somew…
-#> 5           20 2019-12-04      Data analyst      2 - Somewhat disagr… 3 - Neutr…
-#> 6            5 2019-11-27      Data analyst      2 - Somewhat disagr… 4 - Somew…
+#> # A tibble: 10 × 5
+#>    `Record ID#` `Date assessed` `Respondent type` Intuitive           Accessible
+#>           <int> <chr>           <chr>             <chr>               <chr>     
+#>  1           28 2023-09-15      ""                ""                  ""        
+#>  2           29 2023-09-15      ""                ""                  ""        
+#>  3            1 2018-12-19      "Data analyst"    "5 - Strongly agre… "4 - Some…
+#>  4            2 2018-12-19      "Data analyst"    "4 - Somewhat agre… "4 - Some…
+#>  5            3 2018-12-19      "Evaluator"       "1 - Strongly disa… "2 - Some…
+#>  6            4 2018-12-19      "Evaluator"       "3 - Neutral"       "4 - Some…
+#>  7            5 2019-11-27      "Data analyst"    "2 - Somewhat disa… "4 - Some…
+#>  8           20 2019-12-04      "Data analyst"    "2 - Somewhat disa… "3 - Neut…
+#>  9           24 2023-09-14      ""                ""                  ""        
+#> 10           25 2023-09-14      ""                ""                  ""
 ```
 
 Notice that this function returns a tibble even though the payload from
@@ -87,11 +92,11 @@ get_reports(subdomain = "bhi",
 #> # A tibble: 6 × 13
 #>   description        id    name  type  usedCount usedLast properties.displayOn…¹
 #>   <chr>              <chr> <chr> <chr>     <int> <chr>    <lgl>                 
-#> 1 ""                 6     Aspi… table        32 2023-08… FALSE                 
-#> 2 ""                 5     Find… table        61 2023-08… FALSE                 
-#> 3 ""                 1     List… table       124 2023-08… FALSE                 
+#> 1 ""                 6     Aspi… table         1 2023-09… FALSE                 
+#> 2 ""                 5     Find… table        62 2023-09… FALSE                 
+#> 3 ""                 1     List… table         2 2023-09… FALSE                 
 #> 4 "Sorted by Date M… 2     List… table         0 <NA>     TRUE                  
-#> 5 ""                 7     qbr … table        58 2023-08… FALSE                 
+#> 5 ""                 7     qbr … table        59 2023-09… FALSE                 
 #> 6 ""                 8     qbr … table         4 2023-08… FALSE                 
 #> # ℹ abbreviated name: ¹​properties.displayOnlyNewOrChangedRecords
 #> # ℹ 6 more variables: query.fields <list>, query.filter <chr>,
@@ -129,7 +134,7 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "btiuqitut"
+#> [1] "btk6deyfq"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
@@ -137,7 +142,7 @@ delete_app(subdomain = "bhi",
            app_id = app$id,
            app_name = app$name)
 #> $deletedAppId
-#> [1] "btiuqitut"
+#> [1] "btk6deyfq"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",
