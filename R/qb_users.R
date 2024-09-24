@@ -26,14 +26,9 @@
 get_users <- function(subdomain, auth, agent = NULL, account_id = NULL,
                       user_emails = NULL, app_ids = NULL){
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  stopifnot(val_subdomain(subdomain))
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- ifelse(is.null(account_id),
                    "https://api.quickbase.com/v1/users",

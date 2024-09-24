@@ -21,14 +21,9 @@
 #' }
 get_fields <- function(subdomain, auth, table_id, agent = NULL, include_props = T, include_perms = F){
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  stopifnot(val_subdomain(subdomain), is.character(table_id), length(table_id) == 1)
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- paste0("https://api.quickbase.com/v1/fields?tableId=", table_id,
                    "&includeFieldPerms=", tolower(include_perms))
@@ -63,6 +58,8 @@ get_fields <- function(subdomain, auth, table_id, agent = NULL, include_props = 
 
     field_data <- field_data %>% dplyr::bind_cols(perms %>% dplyr::select(-id))
   }
+
+  field_data <- field_data %>% dplyr::relocate(c(id, label, fieldType), .before = 1)
 
   return(field_data)
 }

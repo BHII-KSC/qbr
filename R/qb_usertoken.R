@@ -71,20 +71,13 @@ delete_token <- function(subdomain, auth, agent = NULL){
   message("Token deleted")
 }
 
+
 manage_token <- function(subdomain, auth, action, agent, req_body){
 
   # Validate arguments and fix where possible
-  stopifnot(is.character(subdomain), is.character(auth),
-            length(subdomain) == 1, length(auth) == 1)
+  stopifnot(val_subdomain(subdomain))
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
-
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   # Build the API call
   qb_url <- paste0("https://api.quickbase.com/v1/usertoken/", action)

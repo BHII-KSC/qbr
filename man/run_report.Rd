@@ -24,7 +24,7 @@ the Quickbase URL. Realm specific.}
 scheme you are using to authenticate the request (e.g., user token).}
 
 \item{table_id}{Character vector with one element. Found in the URL of a
-Quickbase table between /db/ and ?}
+Quickbase table.}
 
 \item{report_id}{Character vector with one element. Found in the 'Reports &
 Charts' page in Quickbase and in the report URL.}

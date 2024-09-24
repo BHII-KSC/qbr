@@ -1,5 +1,10 @@
 # qbr 1.2.4
-- Added a function to insert & update records into a Quickbase table.
+- Added a function to run a user-defined query against a Quickbase table.
+- Belatedly heralding a function to insert & update records into a Quickbase table that was released in v1.2.3 but went unmentioned in news & release notes.
+- Fixed an issue with run_report which failed when a report included some field types (e.g., User fields).
+- Replaced run_report dependency 'httr' with the more modern 'httr2' equivalent.
+- Added validation for key arguments in all functions
+- get_fields and get_tables now place the most important columns at the left side of the tibble returned.
 
 # qbr 1.2.3
 - Added a function to delete records.

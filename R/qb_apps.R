@@ -35,19 +35,11 @@ copy_app <- function(subdomain, auth, app_id, app_name, app_desc = NULL,
                      exclude_files = TRUE, assign_user_token = TRUE){
 
   # Validate arguments and fix where possible
-  stopifnot(is.character(subdomain), is.character(auth), is.character(app_id),
+  stopifnot(val_subdomain(subdomain), is.character(app_id),
             is.logical(users_and_roles), is.logical(keep_data), is.logical(exclude_files),
-            is.logical(assign_user_token), length(subdomain) == 1, length(auth) == 1,
-            length(app_id) == 1)
+            is.logical(assign_user_token), length(app_id) == 1)
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
-
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- paste("https://api.quickbase.com/v1/apps", app_id, "copy", sep = "/")
 
@@ -98,14 +90,9 @@ copy_app <- function(subdomain, auth, app_id, app_name, app_desc = NULL,
 #' }
 delete_app <- function(subdomain, auth, app_id, app_name, agent = NULL){
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  stopifnot(val_subdomain(subdomain), is.character(app_id), length(app_id) == 1)
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- paste0("https://api.quickbase.com/v1/apps/", app_id)
 
@@ -147,14 +134,10 @@ delete_app <- function(subdomain, auth, app_id, app_name, agent = NULL){
 #' }
 get_app_events <- function(subdomain, auth, app_id, agent = NULL){
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  stopifnot(val_subdomain(subdomain), is.character(app_id), length(app_id) == 1)
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
+
 
   qb_url <- paste("https://api.quickbase.com/v1/apps", app_id, "events", sep = "/")
 
@@ -194,14 +177,9 @@ get_app_events <- function(subdomain, auth, app_id, agent = NULL){
 #' }
 get_app <- function(subdomain, auth, app_id, agent = NULL, include_sec = T, include_vars = T){
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  stopifnot(val_subdomain(subdomain), is.character(app_id), length(app_id) == 1)
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- paste0("https://api.quickbase.com/v1/apps/", app_id)
 

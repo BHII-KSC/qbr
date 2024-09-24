@@ -18,14 +18,9 @@
 #' }
 get_tables <- function(subdomain, auth, app_id, agent = NULL){
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  stopifnot(val_subdomain(subdomain), is.character(app_id), length(app_id) == 1)
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- paste0("https://api.quickbase.com/v1/tables?appId=", app_id)
 
@@ -41,5 +36,9 @@ get_tables <- function(subdomain, auth, app_id, agent = NULL){
     error = function(e)
       return(req))
 
-  return(tibble::as_tibble(resp))
+  resp <- resp %>%
+    tibble::as_tibble() %>%
+    dplyr::relocate(c(id, name), .before = 1)
+
+  return(resp)
 }

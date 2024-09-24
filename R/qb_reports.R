@@ -9,12 +9,9 @@
 #' @template table_id
 #' @template report_id
 #' @template agent
-#' @param skip Optional. Integer. The number of rows to skip from the top of a
-#'   record set.
-#' @param top Optional. Integer. The limit on the number of records to pull
-#'   starting at the top of a record set.
-#' @param type_suffix Optional. Logical. Set TRUE to append each field label
-#'   with its Quickbase data type.
+#' @template skip
+#' @template top
+#' @template type_suffix
 #' @param paginate Optional. Logical. Set TRUE to recursively call the API until
 #'   all report pages are collected.
 #'
@@ -47,43 +44,19 @@ run_report <- function(subdomain, auth, table_id, report_id, agent = NULL,
                    skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE) {
 
   # Validate arguments and fix where possible
-  stopifnot(is.character(subdomain), is.character(auth), is.character(table_id),
+  stopifnot(val_subdomain(subdomain), is.character(table_id),
             is.character(report_id), is.numeric(skip), is.numeric(top),
-            is.logical(type_suffix), is.logical(paginate), length(subdomain) == 1,
-            length(auth) == 1, length(table_id) == 1, length(report_id) == 1)
+            is.logical(type_suffix), is.logical(paginate), length(table_id) == 1,
+            length(report_id) == 1)
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
+  auth <- val_token(auth)
 
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  # Call API and store payload as list of data (1) and fields (2)
+  payload <- qb_run_report(subdomain, auth, table_id, report_id, agent, skip, top, paginate)
 
-  # Call API
-  data_text <- qb_run_report(subdomain, auth, table_id, report_id, agent, skip, top, paginate)
-
-  # Prepare field labels for renaming values object
-  data_fields <- data_text[[2]] %>%
-    dplyr::mutate(id = as.character(id),
-                  label_type = stringr::str_c(label, type, sep ="."))
-
-  # Multi-dimensional fields to drop by suffix
-  drop_me <- c(".version", ".id", ".name", ".userName")
 
   tryCatch(
-    data_clean <- data_text[[1]] %>%
-      dplyr::rename_with( ~ gsub("[.]value", "", .x)) %>%
-      dplyr::select(as.character(data_fields$id)) %>%
-
-      dplyr::rename_with( ~ data_fields$label_type) %>%
-      dplyr::select(-dplyr::contains(drop_me)) %>%
-
-      dplyr::mutate(dplyr::across(dplyr::matches("[.]multitext"), ~ lapply(., paste, collapse = "; "))) %>%
-      dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ purrr::map(., "email"))) %>%
-      dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ lapply(., paste, collapse = "; "))) %>%
-      dplyr::mutate(dplyr::across(dplyr::matches("[.]multiuser"), ~ unlist(.))),
+    data_clean <- tabularize(payload[[1]], payload[[2]]),
     error = function(e)
       stop("The report data could not be parsed.
            Try removing fields with complex data types."))
@@ -95,7 +68,7 @@ run_report <- function(subdomain, auth, table_id, report_id, agent = NULL,
 
   if(type_suffix == FALSE){
     data_clean <- data_clean %>%
-      dplyr::rename_with( ~ stringr::str_remove(., "[.].*"))
+      dplyr::rename_with( ~ stringr::str_remove(., "[.][^.]+?$"))
   }
 
   return(data_clean)
@@ -160,10 +133,6 @@ qb_run <- function(subdomain, token, table_id, report_id, agent = NULL,
              skip = 0, top = 0, type_suffix = FALSE, paginate = TRUE)
 }
 
-
-
-#' Calls QB API 'run report' function
-#' @noRd
 qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
                        skip, top, paginate, pages = NULL, page_skip = 0){
 
@@ -177,26 +146,29 @@ qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
                            if(top > 0){paste0("&top=", top)})
 
   # Deliver API call to QB via an HTTP request, store response
-  data_raw <- httr::POST(qb_url,
-                         httr::accept_json(),
-                         httr::add_headers("QB-Realm-Hostname" = subdomain,
-                                           "User-Agent" = agent,
-                                           "Authorization" = auth))
+  req <- httr2::request(qb_url) %>%
+    httr2::req_headers("QB-Realm-Hostname" = subdomain,
+                "User-Agent" = agent,
+                "Authorization" = auth) %>%
+    httr2::req_method("POST")
 
-  # Stop if HTTP request fails
-  httr::stop_for_status(data_raw)
+  resp <- httr2::req_perform(req)
 
-  # Extract JSON payload from HTTP response and flatten
+
+  # Extract JSON payload from HTTP response
   tryCatch(
-    data_text <- jsonlite::fromJSON(httr::content(data_raw, as = "text"), flatten = TRUE),
+    payload <- httr2::resp_body_json(resp),
     error = function(e)
       stop("The report data could not be parsed.
            This is likely due to special characters in text or rich-text fields.
            Try removing fields containing extended ASCII characters from your
            Quickbase report, such as &#146;"))
 
-  new_page <- tibble::as_tibble(data_text[[1]])
-  meta <- data_text[[3]]
+  new_page <- payload[[1]] %>%
+    lapply(., tibble::as_tibble) %>%
+    dplyr::bind_rows()
+
+  meta <- payload[[3]] %>% tibble::as_tibble()
 
   # Stack new page onto extracted pages
   if(!is.null(pages)){
@@ -212,7 +184,7 @@ qb_run_report <- function(subdomain, auth, table_id, report_id, agent,
                       skip, top, paginate, pages, skip + nrow(pages)))
 
   } else {
-    return(list("data" = pages, "fields" = data_text[[2]]))
+    return(list("data" = pages, "fields" = payload[[2]]))
   }
 
 }
@@ -274,17 +246,9 @@ get_reports <- function(subdomain, auth, table_id, agent = NULL){
 qb_get_report <- function(subdomain, auth, table_id, report_id = NULL, agent){
 
   # Validate arguments and fix where possible
-  stopifnot(is.character(subdomain), is.character(auth), is.character(table_id),
-            length(subdomain) == 1, length(auth) == 1, length(table_id) == 1)
+  stopifnot(val_subdomain(subdomain), is.character(table_id), length(table_id) == 1)
 
-  if(!stringr::str_detect(auth, "^QB-USER-TOKEN ") &
-     !stringr::str_detect(auth, "^QB-TEMP-TOKEN ")){
-    auth <- stringr::str_c("QB-USER-TOKEN ", auth)
-  }
-
-  if(!stringr::str_detect(subdomain, "\\.+")){
-    subdomain <- stringr::str_c(subdomain, ".quickbase.com")
-  }
+  auth <- val_token(auth)
 
   qb_url <- ifelse(is.null(report_id),
                    paste0("https://api.quickbase.com/v1/reports", "?tableId=", table_id),

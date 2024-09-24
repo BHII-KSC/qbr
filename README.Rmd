@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/qbr)](https://cran.r-project.org/package=qbr)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/qbr)](https://cran.r-project.org/package=qbr)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/qbr)](https://cran.r-project.org/package=qbr)
 <!-- badges: end -->
 
 The goal of qbr is to make it easy to interact with Quickbase's JSON API.
@@ -50,6 +50,7 @@ You can install the development version of qbr like so:
 |[Reports](https://developer.quickbase.com/operation/runReport)|`run_report`|Returns a tibble containing all data in the specified report|
 |[Records](https://developer.quickbase.com/operation/deleteRecords)|`delete_records`|Deletes records matching query conditions|
 |[Records](https://developer.quickbase.com/operation/upsert)|`update_records`|Inserts and/or updates record(s)|
+|[Records](https://developer.quickbase.com/operation/runQuery)|`query_records`|Returns a tibble with data matching query conditions|
 |N/A|`summarize_app`|Get metadata for an app and its users, tables, and fields|
 
 ## Usage

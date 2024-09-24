@@ -8,7 +8,7 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/qbr)](https://cran.r-project.org/package=qbr)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/qbr)](https://cran.r-project.org/package=qbr)
+downloads](https://cranlogs.r-pkg.org/badges/qbr)](https://cran.r-project.org/package=qbr)
 <!-- badges: end -->
 
 The goal of qbr is to make it easy to interact with Quickbase’s JSON
@@ -42,6 +42,7 @@ You can install the development version of qbr like so:
 | [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
 | [Records](https://developer.quickbase.com/operation/deleteRecords)          | `delete_records`   | Deletes records matching query conditions                    |
 | [Records](https://developer.quickbase.com/operation/upsert)                 | `update_records`   | Inserts and/or updates record(s)                             |
+| [Records](https://developer.quickbase.com/operation/runQuery)               | `query_records`    | Returns a tibble with data matching query conditions         |
 | N/A                                                                         | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
 
 ## Usage
@@ -89,15 +90,16 @@ library(qbr)
 get_reports(subdomain = "bhi",
             auth = keyring::key_get("qb_example"),
             table_id = "bn9d8iesz")
-#> # A tibble: 6 × 13
+#> # A tibble: 7 × 13
 #>   description        id    name  type  usedCount usedLast properties.displayOn…¹
 #>   <chr>              <chr> <chr> <chr>     <int> <chr>    <lgl>                 
-#> 1 ""                 6     Aspi… table         1 2023-09… FALSE                 
+#> 1 ""                 6     Aspi… table        11 2024-09… FALSE                 
 #> 2 ""                 5     Find… table        62 2023-09… FALSE                 
-#> 3 ""                 1     List… table         2 2023-09… FALSE                 
+#> 3 ""                 1     List… table        22 2024-09… FALSE                 
 #> 4 "Sorted by Date M… 2     List… table         0 <NA>     TRUE                  
-#> 5 ""                 7     qbr … table        59 2023-09… FALSE                 
-#> 6 ""                 8     qbr … table         4 2023-08… FALSE                 
+#> 5 ""                 9     qbr … table         4 2024-09… FALSE                 
+#> 6 ""                 7     qbr … table        63 2024-09… FALSE                 
+#> 7 ""                 8     qbr … table        21 2024-09… FALSE                 
 #> # ℹ abbreviated name: ¹​properties.displayOnlyNewOrChangedRecords
 #> # ℹ 6 more variables: query.fields <list>, query.filter <chr>,
 #> #   query.formulaFields <list>, query.groupBy <list>, query.sortBy <list>,
@@ -134,7 +136,7 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "btk6deyfq"
+#> [1] "buium9ndk"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
@@ -142,7 +144,7 @@ delete_app(subdomain = "bhi",
            app_id = app$id,
            app_name = app$name)
 #> $deletedAppId
-#> [1] "btk6deyfq"
+#> [1] "buium9ndk"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",

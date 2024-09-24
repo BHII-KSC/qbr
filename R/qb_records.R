@@ -111,3 +111,139 @@ update_records <- function(subdomain, auth, to, records, mergeFieldId = 3,
 
   return(resp)
 }
+
+
+#' Query for data
+#'
+#' Get tabular data from a Quickbase table using a query.
+#'
+#' @template subdomain
+#' @template auth
+#' @param from Character vector with one element. Table identifier.
+#' @param select Optional. Numeric vector containing field identifiers for
+#'   columns to return. If omitted, the default columns for the table will be
+#'   returned.
+#' @param where Optional. Character vector with one element. Use the Quickbase
+#'   query language to set criteria for records to returned.
+#' @param group_by Optional. Nested named list with 'fieldId' and 'grouping'
+#'   pairs for each field to group by.
+#' @param sort_by Optional. Nested named list with 'fieldId' and sort 'order'
+#'   pairs for each field to sort by. See
+#'   \href{https://developer.quickbase.com/operation/runQuery}{Quickbase JSON
+#'   API documentation} for details on sort order configuration.
+#' @template agent
+#' @template skip
+#' @template top
+#' @param local_time Logical. When true, date time fields are returned using
+#'   app's local time. When false, date time fields are returned using UTC time.
+#' @template type_suffix
+#'
+#' @return A tibble.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#'    # Get all data matching query specification
+#'    my_tibble <- query_records(subdomain = "abc",
+#'        auth = keyring::key_get("qb_example"),
+#'        from = "bn9d8iesz",
+#'        select = c(3, 6:9),
+#'        where = "{8.EX.'6-month'}")
+#'
+#'    # Query data, group, then sort it
+#'    my_tibble <- query_records(subdomain = "bhi",
+#'        auth = keyring::key_get("qb_example"),
+#'        from = "bn9d8iesz",
+#'        select = c(3, 8:12),
+#'        sort_by = list(list(fieldId = 12, order = "ASC"),
+#'                       list(fieldId = 3, order = "DESC")),
+#'        group_by = list(list(fieldId = 4, grouping = "equal-values"),
+#'                        list(fieldId = 9, grouping = "equal-values")))
+#' }
+query_records <- function(subdomain, auth, from, select = as.numeric(),
+                          where = NULL, group_by = NULL, sort_by = NULL,
+                          agent = NULL, skip = 0, top = 0, local_time = FALSE,
+                          type_suffix = FALSE){
+
+  stopifnot(val_subdomain(subdomain), is.character(from), length(from) == 1,
+            is.numeric(select), is.numeric(skip), is.numeric(top))
+  auth <- val_token(auth)
+
+
+  params <- list(from = from, select = select, where = where, sortBy = sort_by,
+                 groupBy = group_by,
+                 options = list(skip = skip, top = top,
+                                compareWithAppLocalTime = local_time))
+
+
+  # Call API and store payload as list of data (1) and fields (2)
+  payload <- qb_query_records(subdomain, auth, params, skip, agent, paginate = TRUE)
+
+
+  tryCatch(
+    data_clean <- tabularize(payload[[1]], payload[[2]]),
+    error = function(e)
+      stop("The report data could not be parsed.
+           Try removing fields with complex data types."))
+
+  # Reduce # records to 'top' (only applies to paginated returns)
+  if(nrow(data_clean) > top & top > 0){
+    data_clean <- data_clean[1:top, ]
+  }
+
+  if(type_suffix == FALSE){
+    data_clean <- data_clean %>%
+      dplyr::rename_with( ~ stringr::str_remove(., "[.][^.]+?$"))
+  }
+
+  return(data_clean)
+}
+
+
+qb_query_records <- function(subdomain, auth, params, skip, agent, paginate,
+                      pages = NULL){
+
+  req <- httr2::request("https://api.quickbase.com/v1/records/query") %>%
+    httr2::req_headers("QB-Realm-Hostname" = subdomain,
+                       "User-Agent" = agent,
+                       "Authorization" = auth) %>%
+    httr2::req_body_json(params) %>%
+    httr2::req_method("POST")
+
+  resp <- httr2::req_perform(req)
+
+  # Extract JSON payload from HTTP response and flatten
+  tryCatch(
+    payload <- httr2::resp_body_json(resp),
+    error = function(e)
+      stop("The report data could not be parsed.
+           This is likely due to special characters in text or rich-text fields.
+           Try removing fields containing extended ASCII characters from your
+           Quickbase report, such as &#146;"))
+
+  new_page <- payload[[1]] %>%
+    lapply(., tibble::as_tibble) %>%
+    dplyr::bind_rows()
+
+  meta <- payload[[3]] %>% tibble::as_tibble()
+
+  # Stack new page onto extracted pages
+  if(!is.null(pages)){
+    pages <- rbind(pages, new_page)
+  } else {
+    pages <- new_page
+  }
+
+  # If not last page, recur
+  if(meta$totalRecords - skip > nrow(pages) &
+     (nrow(pages) < params$options$top | params$options$top == 0) & paginate){
+
+    params$options$skip <- params$options$skip + nrow(pages)
+    return(qb_query_records(subdomain, auth, params, skip, agent, paginate, pages))
+
+  } else {
+    return(list("data" = pages, "fields" = payload[[2]]))
+  }
+
+}

@@ -22,7 +22,8 @@ Imports:
     purrr (>= 0.3.4),
     stringr (>= 1.4.0),
     tibble (>= 3.1.7),
-    httr2 (>= 0.2.3)
+    httr2 (>= 0.2.3),
+    tidyselect (>= 1.2.0)
 Suggests: 
     testthat (>= 3.0.0),
     keyring
