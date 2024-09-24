@@ -1,3 +1,8 @@
+## Submission 2023-09-24
+* There were no errors, warnings, or notes from check() on my windows device
+* devtools::check_mac_release and devtools::check_win_devel() ran without error, warning or notes.
+* A reverse dependency check using revdepcheck::revdep_check found no reverse dependencies.
+
 ## Submission 2023-08-23
 * There were no errors, warnings, or notes when running check() on my windows device
 * Ran devtools::check_mac_release and rhub::check on a Debian OS without error, 
