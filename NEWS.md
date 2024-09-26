@@ -1,3 +1,5 @@
+# qbr (development version)
+
 # qbr 1.2.4
 - Added a function to run a user-defined query against a Quickbase table.
 - Belatedly heralding a function to insert & update records into a Quickbase table that was released in v1.2.3 but went unmentioned in news & release notes.
