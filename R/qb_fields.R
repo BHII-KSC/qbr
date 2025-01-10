@@ -63,3 +63,80 @@ get_fields <- function(subdomain, auth, table_id, agent = NULL, include_props = 
 
   return(field_data)
 }
+
+
+#' Delete field(s) in a table
+#'
+#' Delete a list of one or more fields in a table.
+#'
+#' @template subdomain
+#' @template auth
+#' @template table_id
+#' @param field_ids Character or numeric vector. Field identifier for fields to delete.
+#' @template agent
+#'
+#' @return A tibble with the status of the fields passed to field_ids.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'    delete_fields(subdomain = "abc",
+#'               auth = keyring::key_get("qb_example"),
+#'               table_id = "bsf5hphe5",
+#'               field_ids = c(40:43, 45))
+#' }
+delete_fields <- function(subdomain, auth, table_id, field_ids, agent = NULL){
+
+  stopifnot(val_subdomain(subdomain), is.character(table_id), length(table_id) == 1,
+            (is.character(field_ids) | is.numeric(field_ids)))
+
+  auth <- val_token(auth)
+  qb_url <- paste0("https://api.quickbase.com/v1/fields?tableId=", table_id)
+  field_ids <- list(fieldIds = field_ids)
+
+
+  req <- httr2::request(qb_url) %>%
+    httr2::req_headers("QB-Realm-Hostname" = subdomain,
+                       "User-Agent" = agent,
+                       "Authorization" = auth) %>%
+    httr2::req_body_json(field_ids) %>%
+    httr2::req_method("DELETE")
+
+  resp <- httr2::req_perform(req)
+
+  # Extract JSON payload from HTTP response
+  tryCatch(
+    payload <- httr2::resp_body_json(resp),
+    error = function(e)
+      stop("The report data could not be parsed.
+           This is likely due to special characters in text or rich-text fields.
+           Try removing fields containing extended ASCII characters from your
+           Quickbase report, such as &#146;"))
+
+
+  # Detect deletions & errors, then tidy and bind
+  dels <- payload %>% purrr::pluck("deletedFieldIds") %>% data.frame()
+  errs <- payload %>% purrr::pluck("errors") %>% data.frame()
+
+  if(nrow(dels) > 0) {
+    dels <- dels %>%
+      tidyr::pivot_longer(tidyr::everything(), values_to = "field_id") %>%
+      dplyr::mutate(status = "deleted",
+                    field_id = as.character(field_id),
+                    message = "") %>%
+      dplyr::select(-name)
+  }
+
+  if(nrow(errs) > 0){
+    errs <- errs %>%
+      tidyr::pivot_longer(tidyr::everything(), values_to = "field_id") %>%
+      dplyr::mutate(status = "error",
+             message = field_id,
+             field_id = stringr::str_remove_all(field_id, "[[^0-9]]")) %>%
+      dplyr::select(-name)
+  }
+
+  resp_tidy <- dplyr::bind_rows(dels, errs)
+
+  return(resp_tidy)
+}
