@@ -1,4 +1,5 @@
-# qbr (development version)
+# qbr 1.3.0
+- Added a function to delete fields
 
 # qbr 1.2.4
 - Added a function to run a user-defined query against a Quickbase table.

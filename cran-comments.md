@@ -1,3 +1,7 @@
+## Submission 2025-01-10
+* There were no errors, warnings, or notes from check() on my windows device
+* devtools::check_mac_release and devtools::check_win_devel() ran without error, warning or notes.
+
 ## Submission 2023-09-24
 * There were no errors, warnings, or notes from check() on my windows device
 * devtools::check_mac_release and devtools::check_win_devel() ran without error, warning or notes.

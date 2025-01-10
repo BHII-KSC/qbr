@@ -25,25 +25,26 @@ You can install the development version of qbr like so:
 
 ## Functions
 
-| API page                                                                    | Function           | Description                                                  |
-|:----------------------------------------------------------------------------|:-------------------|:-------------------------------------------------------------|
-| [Users](https://developer.quickbase.com/operation/getUsers)                 | `get_users`        | Returns a tibble with details of each user in an account     |
-| [User token](https://developer.quickbase.com/operation/cloneUserToken)      | `clone_token`      | Copy a usertoken                                             |
-| [User token](https://developer.quickbase.com/operation/deactivateUserToken) | `deactivate_token` | Deactivate a usertoken                                       |
-| [User token](https://developer.quickbase.com/operation/deleteUserToken)     | `delete_token`     | Delete a usertoken                                           |
-| [Apps](https://developer.quickbase.com/operation/getApp)                    | `get_app`          | Get metadata for an app                                      |
-| [Apps](https://developer.quickbase.com/operation/copyApp)                   | `copy_app`         | Copy an app                                                  |
-| [Apps](https://developer.quickbase.com/operation/deleteApp)                 | `delete_app`       | Delete an app                                                |
-| [Apps](https://developer.quickbase.com/operation/getAppEvents)              | `get_app_events`   | Returns a tibble of triggerable events                       |
-| [Tables](https://developer.quickbase.com/operation/getAppTables)            | `get_tables`       | Get metadata for all tables in an app                        |
-| [Fields](https://developer.quickbase.com/operation/getFields)               | `get_fields`       | Get metadata for all fields in a table                       |
-| [Reports](https://developer.quickbase.com/operation/getReport)              | `get_report`       | Returns a named list of metadata for the specified report    |
-| [Reports](https://developer.quickbase.com/operation/getTableReports)        | `get_reports`      | Returns a tibble of metadata for each report in a table      |
-| [Reports](https://developer.quickbase.com/operation/runReport)              | `run_report`       | Returns a tibble containing all data in the specified report |
-| [Records](https://developer.quickbase.com/operation/deleteRecords)          | `delete_records`   | Deletes records matching query conditions                    |
-| [Records](https://developer.quickbase.com/operation/upsert)                 | `update_records`   | Inserts and/or updates record(s)                             |
-| [Records](https://developer.quickbase.com/operation/runQuery)               | `query_records`    | Returns a tibble with data matching query conditions         |
-| N/A                                                                         | `summarize_app`    | Get metadata for an app and its users, tables, and fields    |
+| API page | Function | Description |
+|:---|:---|:---|
+| [Users](https://developer.quickbase.com/operation/getUsers) | `get_users` | Returns a tibble with details of each user in an account |
+| [User token](https://developer.quickbase.com/operation/cloneUserToken) | `clone_token` | Copy a usertoken |
+| [User token](https://developer.quickbase.com/operation/deactivateUserToken) | `deactivate_token` | Deactivate a usertoken |
+| [User token](https://developer.quickbase.com/operation/deleteUserToken) | `delete_token` | Delete a usertoken |
+| [Apps](https://developer.quickbase.com/operation/getApp) | `get_app` | Get metadata for an app |
+| [Apps](https://developer.quickbase.com/operation/copyApp) | `copy_app` | Copy an app |
+| [Apps](https://developer.quickbase.com/operation/deleteApp) | `delete_app` | Delete an app |
+| [Apps](https://developer.quickbase.com/operation/getAppEvents) | `get_app_events` | Returns a tibble of triggerable events |
+| [Tables](https://developer.quickbase.com/operation/getAppTables) | `get_tables` | Get metadata for all tables in an app |
+| [Fields](https://developer.quickbase.com/operation/getFields) | `get_fields` | Get metadata for all fields in a table |
+| [Fields](https://developer.quickbase.com/operation/deleteFields) | `delete_fields` | Delete one or more fields in a table |
+| [Reports](https://developer.quickbase.com/operation/getReport) | `get_report` | Returns a named list of metadata for the specified report |
+| [Reports](https://developer.quickbase.com/operation/getTableReports) | `get_reports` | Returns a tibble of metadata for each report in a table |
+| [Reports](https://developer.quickbase.com/operation/runReport) | `run_report` | Returns a tibble containing all data in the specified report |
+| [Records](https://developer.quickbase.com/operation/deleteRecords) | `delete_records` | Deletes records matching query conditions |
+| [Records](https://developer.quickbase.com/operation/upsert) | `update_records` | Inserts and/or updates record(s) |
+| [Records](https://developer.quickbase.com/operation/runQuery) | `query_records` | Returns a tibble with data matching query conditions |
+| N/A | `summarize_app` | Get metadata for an app and its users, tables, and fields |
 
 ## Usage
 
@@ -62,11 +63,11 @@ run_report(subdomain = "bhi",
 #> # A tibble: 10 × 5
 #>    `Record ID#` `Date assessed` `Respondent type` Intuitive           Accessible
 #>           <int> <chr>           <chr>             <chr>               <chr>     
-#>  1           28 2023-09-15      ""                ""                  ""        
-#>  2           29 2023-09-15      ""                ""                  ""        
-#>  3            1 2018-12-19      "Data analyst"    "5 - Strongly agre… "4 - Some…
-#>  4            2 2018-12-19      "Data analyst"    "4 - Somewhat agre… "4 - Some…
-#>  5            3 2018-12-19      "Evaluator"       "1 - Strongly disa… "2 - Some…
+#>  1            3 2018-12-19      "Evaluator"       "1 - Strongly disa… "2 - Some…
+#>  2           28 2023-09-15      ""                ""                  ""        
+#>  3           29 2023-09-15      ""                ""                  ""        
+#>  4            1 2018-12-19      "Data analyst"    "5 - Strongly agre… "4 - Some…
+#>  5            2 2018-12-19      "Data analyst"    "4 - Somewhat agre… "4 - Some…
 #>  6            4 2018-12-19      "Evaluator"       "3 - Neutral"       "4 - Some…
 #>  7            5 2019-11-27      "Data analyst"    "2 - Somewhat disa… "4 - Some…
 #>  8           20 2019-12-04      "Data analyst"    "2 - Somewhat disa… "3 - Neut…
@@ -95,11 +96,11 @@ get_reports(subdomain = "bhi",
 #>   <chr>              <chr> <chr> <chr>     <int> <chr>    <lgl>                 
 #> 1 ""                 6     Aspi… table        11 2024-09… FALSE                 
 #> 2 ""                 5     Find… table        62 2023-09… FALSE                 
-#> 3 ""                 1     List… table        22 2024-09… FALSE                 
+#> 3 ""                 1     List… table        36 2025-01… FALSE                 
 #> 4 "Sorted by Date M… 2     List… table         0 <NA>     TRUE                  
 #> 5 ""                 9     qbr … table         4 2024-09… FALSE                 
-#> 6 ""                 7     qbr … table        63 2024-09… FALSE                 
-#> 7 ""                 8     qbr … table        21 2024-09… FALSE                 
+#> 6 ""                 7     qbr … table        66 2025-01… FALSE                 
+#> 7 ""                 8     qbr … table        29 2024-09… FALSE                 
 #> # ℹ abbreviated name: ¹​properties.displayOnlyNewOrChangedRecords
 #> # ℹ 6 more variables: query.fields <list>, query.filter <chr>,
 #> #   query.formulaFields <list>, query.groupBy <list>, query.sortBy <list>,
@@ -136,7 +137,7 @@ app <- copy_app(subdomain = "bhi",
                 keep_data = TRUE)
 
 print(app$id)
-#> [1] "buium9ndk"
+#> [1] "butjcrxzi"
 
 # Delete the newly created app
 delete_app(subdomain = "bhi",
@@ -144,7 +145,7 @@ delete_app(subdomain = "bhi",
            app_id = app$id,
            app_name = app$name)
 #> $deletedAppId
-#> [1] "buium9ndk"
+#> [1] "butjcrxzi"
 
 # Get the triggerable events of an app
 get_app_events(subdomain = "bhi",

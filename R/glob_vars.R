@@ -12,4 +12,5 @@ utils::globalVariables(c("id",
                          "spaceUsedInt",
                          "description",
                          "fieldType",
+                         "field_id",
                          "."))
